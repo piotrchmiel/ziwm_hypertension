@@ -11,4 +11,4 @@ six==1.10.0
 sklearn==0.0
 wrapt==1.10.6
 lxml==3.5.0
-openpyxl==2.5.0
+openpyxl==2.3.3
