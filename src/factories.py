@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 from itertools import chain
 from os import path
 from random import shuffle
@@ -7,7 +8,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.svm import SVC
 
 from src.settings import TRAINING_SET_DIR, TRAINING_SET_FILENAME, SHEET_NAME
-from src.sklearn_wrapper import SklearnWrapper
+from src.sklearn_wrapper import SklearnWrapper, TwoLayerClassifier
 from src.utils import ExcelParser, load_object
 
 
@@ -19,11 +20,25 @@ class MultiClassClassifierFactory:
         classifier.train(X,y)
         return classifier
 
+    @classmethod
+    def make_default_two_layer_classifier(self, Class, X, y):
+        classifier = SklearnWrapper(Class())
+        two_layer_classifier = TwoLayerClassifier(deepcopy(classifier), deepcopy(classifier), 'essent')
+        two_layer_classifier.train(X,y)
+        return two_layer_classifier
+
     @staticmethod
     def make_ada_boost_classifier(X, y):
         classifier = SklearnWrapper(AdaBoostClassifier(SVC(), algorithm='SAMME'))
         classifier.train(X,y)
         return classifier
+
+    @staticmethod
+    def make_ada_boost_two_layer_classifier(X, y):
+        classifier = SklearnWrapper(AdaBoostClassifier(SVC(), algorithm='SAMME'))
+        two_layer_classifier = TwoLayerClassifier(deepcopy(classifier), deepcopy(classifier), 'essent')
+        two_layer_classifier.train(X,y)
+        return two_layer_classifier
 
     @staticmethod
     def make_classifier_from_file(filename):
