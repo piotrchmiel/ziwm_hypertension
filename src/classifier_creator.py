@@ -21,12 +21,10 @@ def main():
     for name, algorithm_class in ALGORITHMS.items():
         multiclass_classifier = MultiClassClassifierFactory.make_default_classifier(algorithm_class, train_set,
                                                                                     train_labels, **keywords)
-
         save_object(path.join(CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])), multiclass_classifier)
 
         two_layer_classifier = MultiClassClassifierFactory.make_default_two_layer_classifier(algorithm_class, train_set,
                                                                                              train_labels, **keywords)
-
         save_object(path.join(CLASSIFIERS_DIR, "".join(['two_layer_', name, '.pickle'])), two_layer_classifier)
 
     print("Done.")
