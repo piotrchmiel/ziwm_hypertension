@@ -31,10 +31,8 @@ class SklearnWrapper(object):
         return self._encoder.classes_
 
     def accuracy(self, X, y):
-        pred = []
-        for feature_set in X:
-            pred.append(self.classify(feature_set))
-        return accuracy_score(y, pred)
+        pred = [self.classify(feature_set) for feature_set in X]
+        return accuracy_score(y, pred) * 100
 
 
 class TwoLayerClassifier(object):
@@ -72,7 +70,5 @@ class TwoLayerClassifier(object):
         return self.main_class
 
     def accuracy(self, X, y):
-        pred = []
-        for feature_set in X:
-            pred.append(self.classify(feature_set))
-        return accuracy_score(y, pred)
+        pred = [self.classify(feature_set) for feature_set in X]
+        return accuracy_score(y, pred) * 100

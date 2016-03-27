@@ -7,7 +7,8 @@ def main():
     print("Starting Test..")
 
     rfc = abc = bc = trfc = tabc = tbc = 0
-    for _ in range(100):
+    for i in range(100):
+        print(i)
         train_set, train_labels, test_set, test_labels = LearningSetFactory.get_learning_sets_and_labels(0.8)
 
         multiclass_random_forest = MultiClassClassifierFactory.make_default_classifier(RandomForestClassifier, train_set,
