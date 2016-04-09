@@ -12,16 +12,16 @@ from src.utils import ExcelParser, load_object
 class MultiClassClassifierFactory:
 
     @classmethod
-    def make_default_classifier(self, Class, X, y, *args, **kwargs):
+    def make_default_classifier(cls, Class, X, y, *args, **kwargs):
         classifier = SklearnWrapper(Class(*args, **kwargs))
-        classifier.train(X,y)
+        classifier.train(X, y)
         return classifier
 
     @classmethod
-    def make_default_two_layer_classifier(self, Class, X, y, *args, **kwargs):
+    def make_default_two_layer_classifier(cls, Class, X, y, *args, **kwargs):
         classifier = SklearnWrapper(Class(*args, **kwargs))
         two_layer_classifier = TwoLayerClassifier(deepcopy(classifier), deepcopy(classifier), 'essent')
-        two_layer_classifier.train(X,y)
+        two_layer_classifier.train(X, y)
         return two_layer_classifier
 
     @staticmethod
