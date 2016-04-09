@@ -1,6 +1,6 @@
 from os import path
 
-from src.factories import MultiClassClassifierFactory
+from src.factories import MulticlassClassifierFactory
 from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, ALGORITHMS
 from src.utils import load_object
 
@@ -13,12 +13,12 @@ def main():
     print("Benchmark")
 
     for name, algorithm in ALGORITHMS.items():
-        multiclass_classifier = MultiClassClassifierFactory.make_classifier_from_file(path.join(
+        multiclass_classifier = MulticlassClassifierFactory.make_classifier_from_file(path.join(
                 CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])))
         print("{0:25} : {1:.3f}".format("".join(['multiclass_', name]), multiclass_classifier.accuracy(test_set,
                                                                                                        test_labels)))
 
-        two_layer_classifier =  MultiClassClassifierFactory.make_classifier_from_file(path.join(
+        two_layer_classifier =  MulticlassClassifierFactory.make_classifier_from_file(path.join(
                 CLASSIFIERS_DIR, "".join(['two_layer_', name, '.pickle'])))
         print("{0:25} : {1:.3f}".format("".join(['two_layer_', name]), two_layer_classifier.accuracy(test_set,
                                                                                                      test_labels)))
