@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
 
-from src.factories import LearningSetFactory, MultiClassClassifierFactory
+from src.factories import LearningSetFactory, MulticlassClassifierFactory
 
 
 def main():
@@ -11,18 +11,18 @@ def main():
         print(i)
         train_set, train_labels, test_set, test_labels = LearningSetFactory.get_learning_sets_and_labels(0.8)
 
-        multiclass_random_forest = MultiClassClassifierFactory.make_default_classifier(RandomForestClassifier, train_set,
+        multiclass_random_forest = MulticlassClassifierFactory.make_default_classifier(RandomForestClassifier, train_set,
                                                                                        train_labels)
-        multiclass_ada_boost_classifier = MultiClassClassifierFactory.make_ada_boost_classifier(train_set, train_labels)
-        multiclass_bagging_classifier = MultiClassClassifierFactory.make_default_classifier(BaggingClassifier,
-                                                                                                    train_set, train_labels)
+        multiclass_ada_boost_classifier = MulticlassClassifierFactory.make_ada_boost_classifier(train_set, train_labels)
+        multiclass_bagging_classifier = MulticlassClassifierFactory.make_default_classifier(BaggingClassifier,
+                                                                                            train_set, train_labels)
 
-        two_layer_random_forest = MultiClassClassifierFactory.make_default_two_layer_classifier(RandomForestClassifier,
-                                                                                                  train_set, train_labels)
-        two_layer_ada_boost_classifier = MultiClassClassifierFactory.make_ada_boost_two_layer_classifier(train_set,
+        two_layer_random_forest = MulticlassClassifierFactory.make_default_two_layer_classifier(RandomForestClassifier,
+                                                                                                train_set, train_labels)
+        two_layer_ada_boost_classifier = MulticlassClassifierFactory.make_ada_boost_two_layer_classifier(train_set,
                                                                                                          train_labels)
-        two_layer_bagging_classifier = MultiClassClassifierFactory.make_default_two_layer_classifier(BaggingClassifier,
-                                                                                                    train_set, train_labels)
+        two_layer_bagging_classifier = MulticlassClassifierFactory.make_default_two_layer_classifier(BaggingClassifier,
+                                                                                                     train_set, train_labels)
 
         rfc += multiclass_random_forest.accuracy(test_set, test_labels)
         abc += multiclass_ada_boost_classifier.accuracy(test_set, test_labels)

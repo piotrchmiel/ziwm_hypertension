@@ -9,7 +9,7 @@ from src.sklearn_wrapper import SklearnWrapper, TwoLayerClassifier
 from src.utils import ExcelParser, load_object
 
 
-class MultiClassClassifierFactory:
+class MulticlassClassifierFactory(object):
 
     @classmethod
     def make_default_classifier(self, Class, X, y, *args, **kwargs):
@@ -29,7 +29,7 @@ class MultiClassClassifierFactory:
         return load_object(filename)
 
 
-class LearningSetFactory:
+class LearningSetFactory(object):
 
     @staticmethod
     def get_learning_sets_and_labels(percent_of_train_set):
