@@ -1,9 +1,8 @@
 from os import path
 
-from src.factories import LearningSetFactory, MulticlassClassifierFactory
 from sklearn.tree import DecisionTreeClassifier
 
-from src.factories import LearningSetFactory, MultiClassClassifierFactory
+from src.factories import LearningSetFactory, MulticlassClassifierFactory
 from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, ALGORITHMS, METHODS
 from src.utils import save_object
 
@@ -11,7 +10,7 @@ from src.utils import save_object
 def create_classifiers(method, train_set, train_labels, *args, **kwargs):
     for name, algorithm_class in ALGORITHMS.items():
         if name in METHODS[method]:
-            multiclass_classifier = MultiClassClassifierFactory.make_default_classifier(algorithm_class, train_set,
+            multiclass_classifier = MulticlassClassifierFactory.make_default_classifier(algorithm_class, train_set,
                                                                                         train_labels, *args, **kwargs)
             save_object(path.join(CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])), multiclass_classifier)
 
