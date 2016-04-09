@@ -1,5 +1,6 @@
 from os import path
 
+from src.factories import LearningSetFactory, MulticlassClassifierFactory
 from sklearn.tree import DecisionTreeClassifier
 
 from src.factories import LearningSetFactory, MultiClassClassifierFactory
@@ -14,7 +15,7 @@ def create_classifiers(method, train_set, train_labels, *args, **kwargs):
                                                                                         train_labels, *args, **kwargs)
             save_object(path.join(CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])), multiclass_classifier)
 
-            two_layer_classifier = MultiClassClassifierFactory.make_default_two_layer_classifier(algorithm_class,
+            two_layer_classifier = MulticlassClassifierFactory.make_default_two_layer_classifier(algorithm_class,
                                                                                                  train_set,
                                                                                                  train_labels, *args,
                                                                                                  **kwargs)
