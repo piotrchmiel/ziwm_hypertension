@@ -40,7 +40,7 @@ def main():
     print("Multiclass Bagging Classifier       :", bc/100)
     print("Two Layer Random Forest Classifier  :", trfc/100)
     print("Two Layer Ada Boost Classifier      :", tabc/100)
-    print("Two Layer Bagging Classifier        :", tbc /100)
+    print("Two Layer Bagging Classifier        :", tbc/100)
     print("Done.")
 
 if __name__ == '__main__':
