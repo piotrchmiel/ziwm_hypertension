@@ -1,6 +1,6 @@
-from cmath import sqrt, isnan
-import numpy as np
+from cmath import sqrt
 
+import numpy as np
 from sklearn.multiclass import OneVsOneClassifier, _predict_binary
 from sklearn.neighbors import NearestNeighbors
 
@@ -31,7 +31,7 @@ def dynamic_ovr_decision_function(predictions, confidences, n_classes):
     k = 0
     for i in range(n_classes):
         for j in range(i + 1, n_classes):
-            if not isnan(confidences[:, k]) or not isnan(predictions[:, k]):
+            if not np.isnan(confidences[:, k]) or not np.isnan(predictions[:, k]):
                 sum_of_confidences[:, i] -= confidences[:, k]
                 sum_of_confidences[:, j] += confidences[:, k]
                 votes[predictions[:, k] == 0, i] += 1
@@ -63,17 +63,16 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius=radius, algorithm=algorithm, leaf_size=leaf_size,
                                      metric=metric, p=p, metric_params=metric_params, n_jobs=n_jobs)
         self.n_neighbors = n_neighbors
-        self._fit_X = None
         self._fit_Y = None
 
     def fit(self, X, y):
         self._fit_Y = y
-        self._fit_X = self.nbrs.fit(X, y)
+        self.nbrs.fit(X, y)
         return OneVsOneClassifier.fit(self, X, y)
 
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
-        estimators_set = set([])
+        estimators_set = set()
         estimators = list()
         for neighbor in neighbors[0]:
             estimators_set.add(self._fit_Y[neighbor])
