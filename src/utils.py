@@ -1,7 +1,7 @@
 from itertools import islice
-from pickle import dump, load
 
 import numpy as np
+from joblib import dump, load
 from openpyxl import load_workbook
 
 
@@ -29,11 +29,8 @@ class ExcelParser(object):
 
 
 def save_object(file_location, object):
-    with open(file_location, 'wb') as file_handler:
-        dump(object, file_handler)
+        dump(object, file_location, 3)
 
 
 def load_object(file_location):
-    with open(file_location, 'rb') as file_handler:
-        object = load(file_handler)
-    return object
+    return load(file_location)

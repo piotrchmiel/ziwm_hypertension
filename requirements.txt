@@ -12,3 +12,4 @@ sklearn==0.0
 wrapt==1.10.6
 lxml==3.5.0
 openpyxl==2.3.3
+joblib==0.9.4
