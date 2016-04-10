@@ -11,13 +11,14 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
                  algorithm='auto', leaf_size=30, metric='minkowski',
                  p=2, metric_params=None):
         OneVsOneClassifier.__init__(self, estimator, n_jobs)
-        self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius=radius, algorithm=algorithm, leaf_size=leaf_size,
-                                     metric=metric, p=p, metric_params=metric_params, n_jobs=n_jobs)
+        self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius=radius, algorithm=algorithm,
+                                     leaf_size=leaf_size, metric=metric, p=p,
+                                     metric_params=metric_params, n_jobs=n_jobs)
         self.n_neighbors = n_neighbors
-        self._fit_Y = None
+        self._fit_y = None
 
     def fit(self, X, y):
-        self._fit_Y = y
+        self._fit_y = y
         self.nbrs.fit(X, y)
         return OneVsOneClassifier.fit(self, X, y)
 
@@ -28,9 +29,10 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         confidences = []
 
         for neighbor in neighbors[0]:
-            estimators_set.add(self._fit_Y[neighbor])
+            estimators_set.add(self._fit_y[neighbor])
 
-        n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1)) / 2).real)  # n*(n-1)/2 binary classificators
+        n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1))
+                         / 2).real)  # n*(n-1)/2 binary classificators
 
         k = 0
         for i in range(n_classes):

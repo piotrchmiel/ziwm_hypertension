@@ -9,18 +9,19 @@ from src.sklearn_wrapper import SklearnWrapper, TwoLayerClassifier
 from src.utils import ExcelParser, load_object
 
 
-class MulticlassClassifierFactory(object):
+class ClassifierFactory(object):
 
     @classmethod
-    def make_default_classifier(cls, Class, X, y, *args, **kwargs):
-        classifier = SklearnWrapper(Class(*args, **kwargs))
+    def make_multiclass_classifier(cls, classifier_class, X, y, *args, **kwargs):
+        classifier = SklearnWrapper(classifier_class(*args, **kwargs))
         classifier.train(X, y)
         return classifier
 
     @classmethod
-    def make_default_two_layer_classifier(cls, Class, X, y, *args, **kwargs):
-        classifier = SklearnWrapper(Class(*args, **kwargs))
-        two_layer_classifier = TwoLayerClassifier(deepcopy(classifier), deepcopy(classifier), 'essent')
+    def make_two_layer_classifier(cls, classifier_class, X, y, *args, **kwargs):
+        classifier = SklearnWrapper(classifier_class(*args, **kwargs))
+        two_layer_classifier = TwoLayerClassifier(deepcopy(classifier), deepcopy(classifier),
+                                                  'essent')
         two_layer_classifier.train(X, y)
         return two_layer_classifier
 
@@ -43,7 +44,7 @@ class LearningSetFactory(object):
         train_set = []
         test_set = []
 
-        for key, value in feature_dict.items():
+        for value in feature_dict.values():
             shuffle(value)
             slice_point = int(percent_of_train_set * len(value))
             train_set.extend(value[:slice_point])

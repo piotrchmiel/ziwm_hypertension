@@ -57,7 +57,7 @@ class TwoLayerClassifier(object):
 
         second_layer_data = []
         second_layer_labels = []
-        for feature_set, label in zip(X,y):
+        for feature_set, label in zip(X, y):
             if label != self.main_class:
                 second_layer_data.append(feature_set)
                 second_layer_labels.append(label)

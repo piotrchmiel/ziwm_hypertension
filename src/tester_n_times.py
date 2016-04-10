@@ -1,6 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 
-from src.factories import LearningSetFactory, MulticlassClassifierFactory
+from src.factories import LearningSetFactory, ClassifierFactory
 from src.settings import ALGORITHMS, METHODS
 
 
@@ -22,20 +22,20 @@ def main():
         for name, algorithm in ALGORITHMS.items():
             if name in METHODS['ensemble']:
                 multiclass_classifier = \
-                    MulticlassClassifierFactory.make_default_classifier(algorithm, train_set, train_labels,
-                                                                        **keywords_ensemble)
+                    ClassifierFactory.make_multiclass_classifier(algorithm, train_set, train_labels,
+                                                                 **keywords_ensemble)
                 two_layer_classifier = \
-                    MulticlassClassifierFactory.make_default_two_layer_classifier(algorithm, train_set, train_labels,
-                                                                                  **keywords_ensemble)
+                    ClassifierFactory.make_two_layer_classifier(algorithm, train_set, train_labels,
+                                                                **keywords_ensemble)
             else:
                 multiclass_classifier = \
-                    MulticlassClassifierFactory.make_default_classifier(algorithm, train_set, train_labels,
-                                                                        DecisionTreeClassifier(),
-                                                                        **keywords_multiclass)
+                    ClassifierFactory.make_multiclass_classifier(algorithm, train_set, train_labels,
+                                                                 DecisionTreeClassifier(),
+                                                                 **keywords_multiclass)
                 two_layer_classifier = \
-                    MulticlassClassifierFactory.make_default_two_layer_classifier(algorithm, train_set, train_labels,
-                                                                                  DecisionTreeClassifier(),
-                                                                                  **keywords_multiclass)
+                    ClassifierFactory.make_two_layer_classifier(algorithm, train_set, train_labels,
+                                                                DecisionTreeClassifier(),
+                                                                **keywords_multiclass)
 
             results['multiclass_%s' % name] += multiclass_classifier.accuracy(test_set, test_labels)
             results['two_layer_%s' % name] += two_layer_classifier.accuracy(test_set, test_labels)
