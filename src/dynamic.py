@@ -31,8 +31,8 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         for neighbor in neighbors[0]:
             estimators_set.add(self._fit_y[neighbor])
 
-        n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1))
-                         / 2).real)  # n*(n-1)/2 binary classificators
+        n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1)
+                          ) / 2).real)  # n*(n-1)/2 binary classificators
 
         k = 0
         for i in range(n_classes):
