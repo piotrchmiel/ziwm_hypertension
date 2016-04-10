@@ -1,8 +1,16 @@
-from os import path
+from os import path, listdir
+
+from joblib import Parallel, delayed
 
 from src.factories import MulticlassClassifierFactory
-from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, ALGORITHMS
+from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR
 from src.utils import load_object
+
+
+def benchmark_result(classifier_path, test_set, test_labels):
+    classifier = MulticlassClassifierFactory.make_classifier_from_file(classifier_path)
+    return "{0:25} : {1:.3f}".format(path.splitext(path.basename(classifier_path))[0],
+                                     classifier.accuracy(test_set, test_labels))
 
 
 def main():
@@ -12,17 +20,10 @@ def main():
 
     print("Benchmark")
 
-    for name, algorithm in ALGORITHMS.items():
-        multiclass_classifier = MulticlassClassifierFactory.make_classifier_from_file(path.join(
-                CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])))
-        print("{0:25} : {1:.3f}".format("".join(['multiclass_', name]), multiclass_classifier.accuracy(test_set,
-                                                                                                       test_labels)))
-
-        two_layer_classifier =  MulticlassClassifierFactory.make_classifier_from_file(path.join(
-                CLASSIFIERS_DIR, "".join(['two_layer_', name, '.pickle'])))
-        print("{0:25} : {1:.3f}".format("".join(['two_layer_', name]), two_layer_classifier.accuracy(test_set,
-                                                                                                     test_labels)))
-
+    bench_results = Parallel(n_jobs=-1)(delayed(benchmark_result)
+                                        (path.join(CLASSIFIERS_DIR, filename), test_set, test_labels)
+                                        for filename in listdir(CLASSIFIERS_DIR) if filename.endswith(".pickle"))
+    print("\n".join(sorted(bench_results)))
     print("Done.")
 
 
