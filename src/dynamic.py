@@ -24,8 +24,8 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
         estimators_set = set()
-        pred = []
-        conf = []
+        predictions = []
+        confidences = []
 
         for neighbor in neighbors[0]:
             estimators_set.add(self._fit_Y[neighbor])
@@ -36,15 +36,15 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         for i in range(n_classes):
             for j in range(i + 1, n_classes):
                 if i in estimators_set or j in estimators_set:
-                    pred.append(self.estimators_[k].predict(X))
-                    conf.append(_predict_binary(self.estimators_[k], X))
+                    predictions.append(self.estimators_[k].predict(X))
+                    confidences.append(_predict_binary(self.estimators_[k], X))
                 else:
-                    pred.append(np.nan)
-                    conf.append(np.nan)
+                    predictions.append(np.nan)
+                    confidences.append(np.nan)
                 k += 1
 
-        predictions = np.vstack(pred).T
-        confidences = np.vstack(conf).T
+        predictions = np.vstack(predictions).T
+        confidences = np.vstack(confidences).T
         return self._dynamic_ovr_decision_function(predictions, confidences, len(self.classes_))
 
     def _dynamic_ovr_decision_function(self, predictions, confidences, n_classes):
