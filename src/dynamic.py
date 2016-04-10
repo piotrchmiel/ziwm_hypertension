@@ -8,7 +8,7 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
                  algorithm='auto', leaf_size=30, metric='minkowski',
                  p=2, metric_params=None):
         OneVsOneClassifier.__init__(self, estimator, n_jobs)
-        self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius= radius, algorithm=algorithm, leaf_size=leaf_size,
+        self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius=radius, algorithm=algorithm, leaf_size=leaf_size,
                                      metric=metric, p=p, metric_params=metric_params, n_jobs=n_jobs)
         self.n_neighbors = n_neighbors
         self._fit_X = None
@@ -19,5 +19,6 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
 
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
-        #neighbors zawiera numery wierszy w self._fit_x trzbea wziąć ich klasy spakować do seta
+        #print(neighbors)
+        # neighbors zawiera numery wierszy w self._fit_x trzeba wziąć ich klasy spakować do seta
         return OneVsOneClassifier.decision_function(self, X)
