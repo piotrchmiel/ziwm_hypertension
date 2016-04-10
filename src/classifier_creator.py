@@ -1,3 +1,4 @@
+from itertools import chain
 from os import path
 
 from joblib import Parallel, delayed
@@ -33,13 +34,12 @@ def main():
 
     keywords_ensemble = {'n_estimators': 50}
     keywords_multiclass = {'n_jobs': -1}  # -1 means: use all CPUs
-    Parallel(n_jobs=-1)(delayed(create_classifiers)
+    Parallel(n_jobs=-1)(chain((delayed(create_classifiers)
                         (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
-                        for name, algorithm_class in ALGORITHMS.items() if name in METHODS['ensemble'])
-    Parallel(n_jobs=-1)(delayed(create_classifiers)
-                        (name, algorithm_class, train_set, train_labels,
-                         DecisionTreeClassifier(), **keywords_multiclass)
-                        for name, algorithm_class in ALGORITHMS.items() if name in METHODS['multiclass'])
+                        for name, algorithm_class in ALGORITHMS.items() if name in METHODS['ensemble']),
+                        (delayed(create_classifiers)
+                        (name, algorithm_class, train_set, train_labels, DecisionTreeClassifier(), **keywords_multiclass)
+                        for name, algorithm_class in ALGORITHMS.items() if name in METHODS['multiclass'])))
 
     print("Done.")
 
