@@ -73,7 +73,9 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
         estimators_set = set()
-        estimators = list()
+        pred = []
+        conf = []
+
         for neighbor in neighbors[0]:
             estimators_set.add(self._fit_Y[neighbor])
 
@@ -83,11 +85,13 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         for i in range(n_classes):
             for j in range(i + 1, n_classes):
                 if i in estimators_set or j in estimators_set:
-                    estimators.append(self.estimators_[k])
+                    pred.append(self.estimators_[k].predict(X))
+                    conf.append(_predict_binary(self.estimators_[k], X))
                 else:
-                    estimators.append(None)
+                    pred.append(np.nan)
+                    conf.append(np.nan)
                 k += 1
 
-        predictions = np.vstack([est.predict(X) if est is not None else np.nan for est in estimators]).T
-        confidences = np.vstack([_predict_binary(est, X) if est is not None else np.nan for est in estimators]).T
+        predictions = np.vstack(pred).T
+        confidences = np.vstack(conf).T
         return dynamic_ovr_decision_function(predictions, confidences, len(self.classes_))
