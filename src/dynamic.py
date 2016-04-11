@@ -1,4 +1,5 @@
 from cmath import sqrt
+from sklearn import neighbors
 
 import numpy as np
 from sklearn.multiclass import OneVsOneClassifier, _predict_binary
@@ -9,12 +10,13 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
 
     def __init__(self, estimator, n_jobs=-1, n_neighbors=5, radius=1.0,
                  algorithm='auto', leaf_size=30, metric='minkowski',
-                 p=2, metric_params=None):
+                 p=2, threshold=0.2, metric_params=None):
         OneVsOneClassifier.__init__(self, estimator, n_jobs)
         self.nbrs = NearestNeighbors(n_neighbors=n_neighbors, radius=radius, algorithm=algorithm,
                                      leaf_size=leaf_size, metric=metric, p=p,
                                      metric_params=metric_params, n_jobs=n_jobs)
         self.n_neighbors = n_neighbors
+        self.threshold = threshold
         self._fit_y = None
 
     def fit(self, X, y):
@@ -24,12 +26,19 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
 
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
-        estimators_set = set()
+        neighbors_list = []
         predictions = []
         confidences = []
 
         for neighbor in neighbors[0]:
-            estimators_set.add(self._fit_y[neighbor])
+            neighbors_list.append(self._fit_y[neighbor])
+
+        neighbors_count = len(neighbors_list)
+        neighbors_set = set(neighbors_list)
+        neighbors_set_tmp = neighbors_set.copy()
+        for neighbor in neighbors_set_tmp:
+            if not neighbors_list.count(neighbor)/neighbors_count > self.threshold:
+                neighbors_set.remove(neighbor)
 
         n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1)
                           ) / 2).real)  # n*(n-1)/2 binary classificators
@@ -37,7 +46,7 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         k = 0
         for i in range(n_classes):
             for j in range(i + 1, n_classes):
-                if i in estimators_set or j in estimators_set:
+                if i in neighbors_set or j in neighbors_set:
                     predictions.append(self.estimators_[k].predict(X))
                     confidences.append(_predict_binary(self.estimators_[k], X))
                 else:
@@ -49,7 +58,8 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         confidences = np.vstack(confidences).T
         return self._dynamic_ovr_decision_function(predictions, confidences, len(self.classes_))
 
-    def _dynamic_ovr_decision_function(self, predictions, confidences, n_classes):
+    @staticmethod
+    def _dynamic_ovr_decision_function(predictions, confidences, n_classes):
         """Compute a continuous, tie-breaking ovr decision function.
 
         It is important to include a continuous value, not only votes,
