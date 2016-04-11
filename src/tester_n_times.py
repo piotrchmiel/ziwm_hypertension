@@ -5,15 +5,19 @@ from src.factories import LearningSetFactory, ClassifierFactory
 from src.settings import ALGORITHMS, METHODS
 
 
-def benchmark_result(algorithm_name, algorithm, sets):
+def benchmark_result(algorithm_name, algorithm, learning_set):
     keywords = {'n_estimators': 50} if algorithm_name in METHODS['ensemble'] else {'n_jobs': -1,
                                                                                    'estimator':
                                                                                        DecisionTreeClassifier()}
 
-    multiclass_classifier_accuracy = ClassifierFactory.make_multiclass_classifier(algorithm, sets[0], sets[1],
-                                                                                  **keywords).accuracy(sets[2], sets[3])
-    two_layer_classifier_accuracy = ClassifierFactory.make_two_layer_classifier(algorithm, sets[0], sets[1],
-                                                                                **keywords).accuracy(sets[2], sets[3])
+    multiclass_classifier_accuracy = ClassifierFactory.make_multiclass_classifier(algorithm, learning_set[0],
+                                                                                  learning_set[1],
+                                                                                  **keywords).accuracy(learning_set[2],
+                                                                                                       learning_set[3])
+    two_layer_classifier_accuracy = ClassifierFactory.make_two_layer_classifier(algorithm, learning_set[0],
+                                                                                learning_set[1],
+                                                                                **keywords).accuracy(learning_set[2],
+                                                                                                     learning_set[3])
 
     return algorithm_name, multiclass_classifier_accuracy, two_layer_classifier_accuracy
 
