@@ -1,46 +1,39 @@
+from joblib import Parallel, delayed
 from sklearn.tree import DecisionTreeClassifier
 
 from src.factories import LearningSetFactory, ClassifierFactory
 from src.settings import ALGORITHMS, METHODS
 
 
-def main():
-    iterations = 2
-    keywords_ensemble = {}
-    keywords_multiclass = {'n_jobs': -1}  # -1 means: use all CPUs
+def benchmark_result(algorithm_name, algorithm, sets):
+    keywords = {'n_estimators': 50} if algorithm_name in METHODS['ensemble'] else {'n_jobs': -1,
+                                                                                   'estimator':
+                                                                                       DecisionTreeClassifier()}
 
+    multiclass_classifier_accuracy = ClassifierFactory.make_multiclass_classifier(algorithm, sets[0], sets[1],
+                                                                                  **keywords).accuracy(sets[2], sets[3])
+    two_layer_classifier_accuracy = ClassifierFactory.make_two_layer_classifier(algorithm, sets[0], sets[1],
+                                                                                **keywords).accuracy(sets[2], sets[3])
+
+    return algorithm_name, multiclass_classifier_accuracy, two_layer_classifier_accuracy
+
+
+def main():
+    iterations = 1
+    accuracy_results = {}
     print("Starting Test..")
 
-    results = {}
-    for name, _ in ALGORITHMS.items():
-        results.update({'multiclass_%s' % name: 0})
-        results.update({'two_layer_%s' % name: 0})
-
     for i in range(iterations):
-        print(i)
-        train_set, train_labels, test_set, test_labels = LearningSetFactory.get_learning_sets_and_labels(0.8)
-        for name, algorithm in ALGORITHMS.items():
-            if name in METHODS['ensemble']:
-                multiclass_classifier = \
-                    ClassifierFactory.make_multiclass_classifier(algorithm, train_set, train_labels,
-                                                                 **keywords_ensemble)
-                two_layer_classifier = \
-                    ClassifierFactory.make_two_layer_classifier(algorithm, train_set, train_labels,
-                                                                **keywords_ensemble)
-            else:
-                multiclass_classifier = \
-                    ClassifierFactory.make_multiclass_classifier(algorithm, train_set, train_labels,
-                                                                 DecisionTreeClassifier(),
-                                                                 **keywords_multiclass)
-                two_layer_classifier = \
-                    ClassifierFactory.make_two_layer_classifier(algorithm, train_set, train_labels,
-                                                                DecisionTreeClassifier(),
-                                                                **keywords_multiclass)
+        train_and_test_sets = LearningSetFactory.get_learning_sets_and_labels(0.8)
 
-            results['multiclass_%s' % name] += multiclass_classifier.accuracy(test_set, test_labels)
-            results['two_layer_%s' % name] += two_layer_classifier.accuracy(test_set, test_labels)
+        result = Parallel(n_jobs=-1)(delayed(benchmark_result)(name, algorithm, train_and_test_sets)
+                            for name, algorithm in ALGORITHMS.items())
 
-    for name, result in results.items():
+        for name, multi_accurancy, twol_accuracy in result:
+            accuracy_results['multiclass_%s' % name] = accuracy_results.get('multiclass_%s' % name, 0) + multi_accurancy
+            accuracy_results['two_layer_%s' % name] = accuracy_results.get('two_layer_%s' % name, 0) + twol_accuracy
+
+    for name, result in accuracy_results.items():
         print(name.ljust(32), ":", round(result/iterations, 2))
 
     print("Done.")
