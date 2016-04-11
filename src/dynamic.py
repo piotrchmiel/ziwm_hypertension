@@ -1,5 +1,4 @@
 from cmath import sqrt
-from sklearn import neighbors
 
 import numpy as np
 from sklearn.multiclass import OneVsOneClassifier, _predict_binary
