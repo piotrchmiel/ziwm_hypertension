@@ -68,3 +68,11 @@ chmura_pomiarowa/chmura/migrations
 Session.vim
 .netrwhist
 *~
+
+Training set/*.zip
+Training set/*.gz
+Training set/*.Z
+Training set/*.csv
+Training set/*.dat*
+Training set/tctodd*
+Training set/*idx*-ubyte
