@@ -30,15 +30,17 @@ def main():
     for i in range(iterations):
         train_and_test_sets = LearningSetFactory.get_learning_sets_and_labels(0.8)
 
-        result = Parallel(n_jobs=-1)(delayed(benchmark_result)(name, algorithm, train_and_test_sets)
-                            for name, algorithm in ALGORITHMS.items())
+        result = Parallel(n_jobs=-1)(delayed(benchmark_result)(algorithm_name, algorithm, train_and_test_sets)
+                            for algorithm_name, algorithm in ALGORITHMS.items())
 
-        for name, multi_accurancy, twol_accuracy in result:
-            accuracy_results['multiclass_%s' % name] = accuracy_results.get('multiclass_%s' % name, 0) + multi_accurancy
-            accuracy_results['two_layer_%s' % name] = accuracy_results.get('two_layer_%s' % name, 0) + twol_accuracy
+        for algorithm_name, multi_accurancy, twol_accuracy in result:
+            accuracy_results['multiclass_%s' % algorithm_name] = accuracy_results.get('multiclass_%s' % algorithm_name,
+                                                                                      0) + multi_accurancy
+            accuracy_results['two_layer_%s' % algorithm_name] = accuracy_results.get('two_layer_%s' % algorithm_name,
+                                                                                     0) + twol_accuracy
 
-    for name, result in accuracy_results.items():
-        print(name.ljust(32), ":", round(result/iterations, 2))
+    for algorithm_name, result in accuracy_results.items():
+        print(algorithm_name.ljust(32), ":", round(result/iterations, 2))
 
     print("Done.")
 
