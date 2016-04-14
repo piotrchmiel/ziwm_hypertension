@@ -23,7 +23,7 @@ datasets = {
     },
     'auslan': {
         'download': [
-            'https://archive.ics.uci.edu/ml/machine-learning-databases/auslan2-mld/tctodd.tar.gz'
+            'http://archive.ics.uci.edu/ml/machine-learning-databases/auslan2-mld/tctodd.tar.gz'
         ],
         'files': {},
         'operation': 'nop',
@@ -31,8 +31,8 @@ datasets = {
     },
     'isolet': {
         'download': [
-            'https://archive.ics.uci.edu/ml/machine-learning-databases/isolet/isolet1+2+3+4.data.Z',
-            'https://archive.ics.uci.edu/ml/machine-learning-databases/isolet/isolet5.data.Z'
+            'http://archive.ics.uci.edu/ml/machine-learning-databases/isolet/isolet1+2+3+4.data.Z',
+            'http://archive.ics.uci.edu/ml/machine-learning-databases/isolet/isolet5.data.Z'
         ],
         'files': {
             'isolet1+2+3+4.data',
@@ -71,13 +71,16 @@ datasets = {
 def main():
     training_root = pjoin(split(dirname(realpath(__file__)))[0], 'Training set')
     for dataset, items in datasets.items():
-        print('Getting dataset', dataset, 'if needed...')
+        print('Getting dataset', dataset.upper(), 'if needed...')
+        # download datasets
         for link in items['download']:
             filename = link.split('/')[-1]
             archive = pjoin(training_root, filename)
             if not isfile(archive):
                 print('Downloading', filename)
                 urlretrieve(link, archive)
+
+        # extract files
         for file in items['files']:
             if not isfile(pjoin(training_root, file)):
                 links = [d for d in items['download'] if splitext(file)[0] in d]
@@ -90,19 +93,20 @@ def main():
                         extract_archive(archive, outdir=dirname(archive), program='py_tarfile',
                                         verbosity=-1, interactive=False)
 
-        outfile = pjoin(training_root, items['out'])
+        # generate output files
+        out_filename = pjoin(training_root, items['out'])
         if items['operation'] == 'nop':
             pass
-        elif not isfile(outfile):
+        elif not isfile(out_filename):
             if items['operation'] == 'concat' or items['operation'] == 'dat2csv':
-                with open(pjoin(training_root, outfile), 'w') as file:
+                with open(out_filename, 'w') as file:
                     for fname in items['files']:
                         with open(pjoin(training_root, fname)) as infile:
                             for line in infile:
                                 file.write(line.replace(', ', ';'))
             if items['operation'] == 'dat2csv':
-                with open(pjoin(training_root, outfile), 'r+') as file:
-                    with open(pjoin(training_root, outfile + '2'), 'w') as new_file:
+                with open(out_filename, 'r+') as file:
+                    with open(out_filename + '.tmp', 'w') as new_file:
                         header = True
                         for line in file:
                             if not '@data' in line:
@@ -110,8 +114,8 @@ def main():
                                     new_file.write(line)
                             else:
                                 header = False
-                remove(pjoin(training_root, outfile))
-                move(pjoin(training_root, outfile + '2'), pjoin(training_root, outfile))
+                remove(out_filename)
+                move(out_filename + '.tmp', out_filename)
         print('Done.')
 
 if __name__ == '__main__':
