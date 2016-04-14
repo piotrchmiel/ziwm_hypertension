@@ -33,7 +33,7 @@ class DynamicOneVsRestClassifier(OneVsRestClassifier):
     def predict(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
 
-        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors, self.threshold)
+        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors[0], self.threshold)
 
         check_is_fitted(self, 'estimators_')
         if (hasattr(self.estimators_[0], "decision_function") and

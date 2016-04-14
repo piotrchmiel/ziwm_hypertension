@@ -30,7 +30,7 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
         predictions = []
         confidences = []
 
-        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors, self.threshold)
+        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors[0], self.threshold)
 
         n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1)
                           ) / 2).real)  # n*(n-1)/2 binary classificators
