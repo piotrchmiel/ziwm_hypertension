@@ -37,7 +37,6 @@ def get_creator(method, train_set, train_labels):
 def create_classifiers(method, classifier_name, algorithm_info, train_set, train_labels):
     multiclass_classifier = ClassifierFactory.make_multiclass_classifier(algorithm_info[0], train_set, train_labels,
                                                                          **algorithm_info[1])
-
     save_object(path.join(CLASSIFIERS_DIR, method, "".join(['multiclass_', classifier_name, '.pickle'])),
                 multiclass_classifier)
 

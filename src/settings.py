@@ -25,6 +25,17 @@ METHODS = {ENSEMBLE: {'ada_boost_classifier': (AdaBoostClassifier, DEFAULT_PARAM
                       'random_forest': (RandomForestClassifier, DEFAULT_PARAMETERS[ENSEMBLE]),
                       'bagging_classifier': (BaggingClassifier, DEFAULT_PARAMETERS[ENSEMBLE])},
            MULTICLASS: {'one_vs_one': (OneVsOneClassifier, DEFAULT_PARAMETERS[MULTICLASS]),
-                        'dynamic_one_vs_one': (DynamicOneVsOneClassifier, DEFAULT_PARAMETERS[MULTICLASS]),
                         'one_vs_rest': (OneVsRestClassifier, DEFAULT_PARAMETERS[MULTICLASS]),
-                        'dynamic_one_vs_rest': (DynamicOneVsRestClassifier, DEFAULT_PARAMETERS[MULTICLASS])}}
+                        'dynamic_one_vs_one_all': (DynamicOneVsOneClassifier, dict(
+                            {'threshold': 0.0, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        'dynamic_one_vs_rest_all': (DynamicOneVsRestClassifier, dict(
+                            {'threshold': 0.0, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        'dynamic_one_vs_one_5': (DynamicOneVsOneClassifier, dict(
+                            {'threshold': 0.05, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        'dynamic_one_vs_rest_5': (DynamicOneVsRestClassifier, dict(
+                            {'threshold': 0.05, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        'dynamic_one_vs_one_10': (DynamicOneVsOneClassifier, dict(
+                            {'threshold': 0.1, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        'dynamic_one_vs_rest_10': (DynamicOneVsRestClassifier, dict(
+                            {'threshold': 0.1, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
+                        }}
