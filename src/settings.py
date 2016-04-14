@@ -3,7 +3,7 @@ from os import path
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier
 from sklearn.multiclass import OneVsOneClassifier
 
-from src.dynamic import DynamicOneVsOneClassifier
+from src.dynamic_OvO import DynamicOneVsOneClassifier
 BASE_DIR = path.dirname(path.dirname(__file__))
 
 TRAINING_SET_DIR = path.join(BASE_DIR, "Training set")

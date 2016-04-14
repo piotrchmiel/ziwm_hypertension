@@ -94,26 +94,34 @@ def main():
                                         verbosity=-1, interactive=False)
 
         # generate output files
+        if type(items['files']) == dict:
+            for source, destination in items['files'].items():
+                move(pjoin(training_root, source), pjoin(training_root, destination))
         out_filename = pjoin(training_root, items['out'])
         if items['operation'] == 'nop':
             pass
-        elif not isfile(out_filename):
+        elif isfile(out_filename):
             if items['operation'] == 'concat' or items['operation'] == 'dat2csv':
                 with open(out_filename, 'w') as file:
                     for fname in items['files']:
                         with open(pjoin(training_root, fname)) as infile:
                             for line in infile:
-                                file.write(line.replace(', ', ';'))
+                                file.write(line.replace(', ', ';').replace(',', ';'))
             if items['operation'] == 'dat2csv':
                 with open(out_filename, 'r+') as file:
                     with open(out_filename + '.tmp', 'w') as new_file:
-                        header = True
+                        skip_contents = True
+                        header = ''
                         for line in file:
                             if not '@data' in line:
-                                if not header:
+                                if not skip_contents:
                                     new_file.write(line)
+                                else:
+                                    if '@inputs' in line or '@outputs' in line:
+                                        header += line.split(' ')[1].rstrip() + ";"
                             else:
-                                header = False
+                                skip_contents = False
+                                new_file.write(header[:-1] + '\n')
                 remove(out_filename)
                 move(out_filename + '.tmp', out_filename)
         print('Done.')
