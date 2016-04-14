@@ -4,8 +4,8 @@ from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoost
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from src.dynamic_OvO import DynamicOneVsOneClassifier
-from src.dynamic_OvR import DynamicOneVsRestClassifier
+from src.classifiers.dynamic_OvO import DynamicOneVsOneClassifier
+from src.classifiers.dynamic_OvR import DynamicOneVsRestClassifier
 
 BASE_DIR = path.dirname(path.dirname(__file__))
 

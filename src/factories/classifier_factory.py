@@ -3,8 +3,8 @@ from os import path
 
 from joblib import delayed
 
+from src.classifiers.sklearn_wrapper import SklearnWrapper, TwoLayerClassifier
 from src.settings import METHODS, CLASSIFIERS_DIR, ENSEMBLE
-from src.sklearn_wrapper import SklearnWrapper, TwoLayerClassifier
 from src.utils.tools import load_object, save_object
 
 

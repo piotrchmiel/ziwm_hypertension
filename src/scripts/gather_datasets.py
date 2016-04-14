@@ -1,8 +1,9 @@
 from glob import glob
 from os import sep, remove
 from os.path import dirname, exists, join as pjoin, split, splitext, realpath
-from urllib.request import urlretrieve
 from shutil import move
+from urllib.request import urlretrieve
+
 from patoolib import extract_archive
 
 datasets = {
