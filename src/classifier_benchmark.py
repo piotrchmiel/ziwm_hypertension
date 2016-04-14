@@ -1,10 +1,11 @@
+from itertools import chain
 from os import path, listdir
 
 from joblib import Parallel, delayed
 
-from src.factories import ClassifierFactory
-from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR
-from src.utils import load_object
+from src.factories.classifier_factory import ClassifierFactory
+from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, MULTICLASS, ENSEMBLE
+from src.utils.tools import load_object, get_arguments
 
 
 def benchmark_result(classifier_path, test_set, test_labels):
@@ -13,18 +14,26 @@ def benchmark_result(classifier_path, test_set, test_labels):
                                      classifier.accuracy(test_set, test_labels))
 
 
+def get_benchmark(method, test_set, test_labels):
+    return (delayed(benchmark_result)(path.join(CLASSIFIERS_DIR, method, filename), test_set, test_labels)
+            for filename in listdir(path.join(CLASSIFIERS_DIR, method)) if filename.endswith(".pickle"))
+
+
 def main():
+    args = get_arguments("Classifier Benchmark")
     print("Loading test set...")
 
     test_set, test_labels = load_object(path.join(TRAINING_SET_DIR, 'test_set.pickle'))
 
     print("Benchmark")
 
-    bench_results = Parallel(n_jobs=-1)(delayed(benchmark_result)
-                                        (path.join(CLASSIFIERS_DIR, filename),
-                                         test_set, test_labels)
-                                        for filename in listdir(CLASSIFIERS_DIR)
-                                        if filename.endswith(".pickle"))
+    if args.method == MULTICLASS:
+        bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(MULTICLASS, test_set, test_labels))
+    elif args.method == ENSEMBLE:
+        bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(MULTICLASS, test_set, test_labels))
+    elif args.method == 'all':
+        bench_results = Parallel(n_jobs=args.n_jobs)(chain(get_benchmark(MULTICLASS, test_set, test_labels),
+                                                           get_benchmark(ENSEMBLE, test_set, test_labels)))
 
     print("\n".join(sorted(bench_results)))
     print("Done.")

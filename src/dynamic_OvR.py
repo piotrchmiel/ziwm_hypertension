@@ -1,14 +1,13 @@
-from cmath import sqrt
-
 import array
+
 import numpy as np
+import scipy.sparse as sp
+from sklearn.base import is_classifier
 from sklearn.multiclass import OneVsRestClassifier, _predict_binary
 from sklearn.neighbors import NearestNeighbors
-from sklearn.base import is_classifier
 from sklearn.utils.validation import check_is_fitted, _num_samples
-import scipy.sparse as sp
 
-from src.utils import get_neighbors_above_threshold
+from src.utils.tools import get_neighbors_above_threshold
 
 
 class DynamicOneVsRestClassifier(OneVsRestClassifier):

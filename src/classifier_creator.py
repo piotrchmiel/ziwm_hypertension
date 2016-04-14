@@ -1,43 +1,36 @@
-from argparse import ArgumentParser
 from itertools import chain
 from os import path
 
 from joblib import Parallel, delayed
-from sklearn.tree import DecisionTreeClassifier
 
-from src.factories import LearningSetFactory, ClassifierFactory
-from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, ALGORITHMS, METHODS
-from src.utils import save_object
-
-
-def get_arguments():
-    parser = ArgumentParser("Classifier")
-    parser.add_argument('--n-jobs', '-n', default=-1, type=int, help="Number of used CPU cores. Default: all cores")
-    parser.add_argument('--method', '-m', default='dynamic_multiclass',
-                        choices=['dynamic_multiclass', 'ensemble', 'all'],
-                        type=str, help="This parameter determines which classifiers will be created.")
-
-    return parser.parse_args()
+from src.factories.classifier_factory import ClassifierFactory
+from src.factories.learning_factory import LearningSetFactory
+from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, METHODS, MULTICLASS, ENSEMBLE
+from src.utils.tools import save_object, get_arguments
 
 
-def create_classifiers(name, algorithm_class, train_set, train_labels, *args, **kwargs):
-    multiclass_classifier = ClassifierFactory.make_multiclass_classifier(algorithm_class,
-                                                                         train_set,
-                                                                         train_labels,
-                                                                         *args, **kwargs)
+def get_creator(method, train_set, train_labels):
+    return (delayed(create_classifiers)(method, classifier_name, algorithm_info, train_set, train_labels)
+            for classifier_name, algorithm_info in METHODS[method].items())
 
-    save_object(path.join(CLASSIFIERS_DIR, "".join(['multiclass_', name, '.pickle'])),
+
+def create_classifiers(method, classifier_name, algorithm_info, train_set, train_labels):
+    multiclass_classifier = ClassifierFactory.make_multiclass_classifier(algorithm_info[0], train_set, train_labels,
+                                                                         **algorithm_info[1])
+
+    save_object(path.join(CLASSIFIERS_DIR, method, "".join(['multiclass_', classifier_name, '.pickle'])),
                 multiclass_classifier)
 
-    two_layer_classifier = ClassifierFactory.make_two_layer_classifier(
-        algorithm_class, train_set, train_labels, *args, **kwargs)
+    if method == ENSEMBLE:
+        two_layer_classifier = ClassifierFactory.make_two_layer_classifier(algorithm_info[0], train_set, train_labels,
+                                                                           **algorithm_info[1])
 
-    save_object(path.join(CLASSIFIERS_DIR, "".join(['two_layer_', name, '.pickle'])),
-                two_layer_classifier)
+        save_object(path.join(CLASSIFIERS_DIR, ENSEMBLE,  "".join(['two_layer_', classifier_name, '.pickle'])),
+                    two_layer_classifier)
 
 
 def main():
-    args = get_arguments()
+    args = get_arguments("Classifier Creator")
 
     print("Getting learning sets...")
 
@@ -50,27 +43,13 @@ def main():
     print("Done.")
     print("Creating classifiers...")
 
-    keywords_ensemble = {'n_estimators': 50}
-    keywords_multiclass = {'n_jobs': -1}  # -1 means: use all CPUs
-
-    multiclass_creator = (delayed(create_classifiers)
-                            (name, algorithm_class, train_set, train_labels, DecisionTreeClassifier(),
-                              **keywords_multiclass)
-                              for name, algorithm_class in ALGORITHMS.items()
-                              if name in METHODS['multiclass'])
-
-    ensemble_creator = (delayed(create_classifiers)
-                        (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
-                          for name, algorithm_class in ALGORITHMS.items()
-                          if name in METHODS['ensemble'])
-
-    if args.method == 'dynamic_multiclass':
-        Parallel(n_jobs=-args.n_jobs)(multiclass_creator)
-
-    elif args.method == 'ensemble':
-        Parallel(n_jobs=-args.n_jobs)(ensemble_creator)
+    if args.method == MULTICLASS:
+        Parallel(n_jobs=-args.n_jobs)(get_creator(MULTICLASS, train_set, train_labels))
+    elif args.method == ENSEMBLE:
+        Parallel(n_jobs=-args.n_jobs)(get_creator(ENSEMBLE, train_set, train_labels))
     elif args.method == 'all':
-        Parallel(n_jobs=-args.n_jobs)(chain(ensemble_creator, multiclass_creator))
+        Parallel(n_jobs=-args.n_jobs)(chain(get_creator(MULTICLASS, train_set, train_labels),
+                                            get_creator(ENSEMBLE, train_set, train_labels)))
 
     print("Done.")
 

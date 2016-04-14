@@ -4,7 +4,7 @@ from os import path
 from random import shuffle
 
 from src.settings import TRAINING_SET_DIR, TRAINING_SET_FILENAME, SHEET_NAME
-from src.utils.tools import ExcelParser
+from src.utils.excel import ExcelParser
 
 
 class LearningSetFactory(object):

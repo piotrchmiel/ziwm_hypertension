@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.multiclass import OneVsOneClassifier, _predict_binary
 from sklearn.neighbors import NearestNeighbors
 
-from src.utils import get_neighbors_above_threshold
+from src.utils.tools import get_neighbors_above_threshold
 
 
 class DynamicOneVsOneClassifier(OneVsOneClassifier):
