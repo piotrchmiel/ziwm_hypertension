@@ -9,9 +9,7 @@ def benchmark_result(algorithm_name, algorithm, learning_set):
     keywords = {'n_estimators': 50} if algorithm_name in METHODS['ensemble'] else {'n_jobs': -1,
                                                                                    'estimator':
                                                                                        DecisionTreeClassifier()}
-    train_set = learning_set[0]
-    train_labels = learning_set[1]
-    test_
+    
     multiclass_classifier_accuracy = ClassifierFactory.make_multiclass_classifier(algorithm, learning_set[0],
                                                                                   learning_set[1],
                                                                                   **keywords).accuracy(learning_set[2],
