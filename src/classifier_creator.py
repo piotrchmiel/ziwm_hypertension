@@ -53,27 +53,24 @@ def main():
     keywords_ensemble = {'n_estimators': 50}
     keywords_multiclass = {'n_jobs': -1}  # -1 means: use all CPUs
 
+    multiclass_creator = (delayed(create_classifiers)
+                            (name, algorithm_class, train_set, train_labels, DecisionTreeClassifier(),
+                              **keywords_multiclass)
+                              for name, algorithm_class in ALGORITHMS.items()
+                              if name in METHODS['multiclass'])
+
+    ensemble_creator = (delayed(create_classifiers)
+                        (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
+                          for name, algorithm_class in ALGORITHMS.items()
+                          if name in METHODS['ensemble'])
+
     if args.method == 'dynamic_multiclass':
-        Parallel(n_jobs=-args.n_jobs)(delayed(create_classifiers)
-                                             (name, algorithm_class, train_set, train_labels, DecisionTreeClassifier(),
-                                              **keywords_multiclass)
-                                              for name, algorithm_class in ALGORITHMS.items()
-                                              if name in METHODS['multiclass'])
+        Parallel(n_jobs=-args.n_jobs)(multiclass_creator)
+
     elif args.method == 'ensemble':
-        Parallel(n_jobs=-args.n_jobs)(delayed(create_classifiers)
-                                      (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
-                                      for name, algorithm_class in ALGORITHMS.items()
-                                      if name in METHODS['ensemble'])
+        Parallel(n_jobs=-args.n_jobs)(ensemble_creator)
     elif args.method == 'all':
-        Parallel(n_jobs=-args.n_jobs)(chain((delayed(create_classifiers)
-                                   (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
-                                   for name, algorithm_class in ALGORITHMS.items()
-                                   if name in METHODS['ensemble']),
-                                  (delayed(create_classifiers)
-                                   (name, algorithm_class, train_set, train_labels,
-                                    DecisionTreeClassifier(), **keywords_multiclass)
-                                   for name, algorithm_class in ALGORITHMS.items()
-                                   if name in METHODS['multiclass'])))
+        Parallel(n_jobs=-args.n_jobs)(chain(ensemble_creator, multiclass_creator))
 
     print("Done.")
 
