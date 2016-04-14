@@ -35,3 +35,19 @@ def save_object(file_location, class_object):
 
 def load_object(file_location):
     return load(file_location)
+
+
+def get_neighbors_above_threshold(y, neighbors, threshold):
+    neighbors_list = []
+
+    for neighbor in neighbors[0]:
+        neighbors_list.append(y[neighbor])
+
+    neighbors_count = len(neighbors_list)
+    neighbors_set = set(neighbors_list)
+    neighbors_set_tmp = neighbors_set.copy()
+    for neighbor in neighbors_set_tmp:
+        if not neighbors_list.count(neighbor) / neighbors_count > threshold:
+            neighbors_set.remove(neighbor)
+
+    return neighbors_set

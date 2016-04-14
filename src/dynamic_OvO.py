@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.multiclass import OneVsOneClassifier, _predict_binary
 from sklearn.neighbors import NearestNeighbors
 
+from src.utils import get_neighbors_above_threshold
+
 
 class DynamicOneVsOneClassifier(OneVsOneClassifier):
 
@@ -25,19 +27,10 @@ class DynamicOneVsOneClassifier(OneVsOneClassifier):
 
     def decision_function(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
-        neighbors_list = []
         predictions = []
         confidences = []
 
-        for neighbor in neighbors[0]:
-            neighbors_list.append(self._fit_y[neighbor])
-
-        neighbors_count = len(neighbors_list)
-        neighbors_set = set(neighbors_list)
-        neighbors_set_tmp = neighbors_set.copy()
-        for neighbor in neighbors_set_tmp:
-            if not neighbors_list.count(neighbor)/neighbors_count > self.threshold:
-                neighbors_set.remove(neighbor)
+        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors, self.threshold)
 
         n_classes = int(((1 + sqrt(4 * 2 * len(self.estimators_) + 1)
                           ) / 2).real)  # n*(n-1)/2 binary classificators

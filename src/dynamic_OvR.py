@@ -8,6 +8,8 @@ from sklearn.base import is_classifier
 from sklearn.utils.validation import check_is_fitted, _num_samples
 import scipy.sparse as sp
 
+from src.utils import get_neighbors_above_threshold
+
 
 class DynamicOneVsRestClassifier(OneVsRestClassifier):
     def __init__(self, estimator, n_jobs=-1, n_neighbors=18, radius=1.0,
@@ -27,22 +29,12 @@ class DynamicOneVsRestClassifier(OneVsRestClassifier):
         return OneVsRestClassifier.fit(self, X, y)
 
     def predict_proba(self, X):
-        print('kek')
         return OneVsRestClassifier(self, X)
 
     def predict(self, X):
         neighbors = self.nbrs.kneighbors(X, self.n_neighbors, return_distance=False)
-        neighbors_list = []
 
-        for neighbor in neighbors[0]:
-            neighbors_list.append(self._fit_y[neighbor])
-
-        neighbors_count = len(neighbors_list)
-        neighbors_set = set(neighbors_list)
-        neighbors_set_tmp = neighbors_set.copy()
-        for neighbor in neighbors_set_tmp:
-            if not neighbors_list.count(neighbor) / neighbors_count > self.threshold:
-                neighbors_set.remove(neighbor)
+        neighbors_set = get_neighbors_above_threshold(self._fit_y, neighbors, self.threshold)
 
         check_is_fitted(self, 'estimators_')
         if (hasattr(self.estimators_[0], "decision_function") and
