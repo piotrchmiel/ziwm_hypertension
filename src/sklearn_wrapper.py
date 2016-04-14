@@ -1,6 +1,6 @@
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import accuracy_score
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import LabelEncoder, Imputer
 
 
@@ -12,20 +12,17 @@ class SklearnWrapper(object):
         self._encoder = LabelEncoder()
         self._vectorizer = DictVectorizer(dtype=dtype, sparse=sparse, sort=sort)
         self._imputer = Imputer(missing_values='NaN', strategy='mean', axis=0)
-        self._pipeline = Pipeline([('_vectorizer', self._vectorizer), ('_imputer', self._imputer)])
+        self._clf_pipeline = make_pipeline(self._vectorizer, self._imputer, self._classifier)
 
     def __repr__(self):
-        return "<SklearnWrapper(%r)>" % self._classifier
+        return "<SklearnWrapper(%r)>" % self._clf_pipeline
 
     def train(self, X, y):
-
-        X = self._pipeline.fit_transform(X)
         y = self._encoder.fit_transform(y)
-        self._classifier.fit(X, y)
+        self._clf_pipeline.fit(X, y)
 
     def classify(self, feature_set):
-        feature_set = self._pipeline.transform(feature_set)
-        return self._encoder.classes_[self._classifier.predict(feature_set)][0]
+        return self._encoder.classes_[self._clf_pipeline.predict(feature_set)][0]
 
     def get_classes(self):
         return self._encoder.classes_
