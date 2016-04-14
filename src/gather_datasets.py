@@ -113,7 +113,7 @@ def main():
                         for line in infile:
                             if first_record:
                                 header = ';'.join(
-                                    ['Atr-' + str(i) for i in range(1, len(line.split('\t')))]
+                                    ['Atr-' + str(i) for i in range(1, len(line.split('\t')) + 1)]
                                 ) + ';Class'
                                 out_file.write(header + '\n')
                                 first_record = False
