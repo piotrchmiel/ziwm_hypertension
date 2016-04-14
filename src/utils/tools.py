@@ -21,7 +21,6 @@ def get_neighbors_above_threshold(labels, neighbors_all, threshold):
             if all_neighbors_classes.count(neighbor) / neighbors_count > threshold}
 
 
-
 def get_arguments(script_name):
     parser = ArgumentParser(script_name)
     parser.add_argument('--n-jobs', '-n', default=-1, type=int, help="Number of used CPU cores. Default: all cores")
@@ -30,5 +29,3 @@ def get_arguments(script_name):
                         type=str, help="This parameter determines which classifiers will be created.")
 
     return parser.parse_args()
-
-

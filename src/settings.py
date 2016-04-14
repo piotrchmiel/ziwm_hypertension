@@ -13,8 +13,8 @@ ENSEMBLE = 'ensemble'
 MULTICLASS = 'multiclass'
 
 TRAINING_SET_DIR = path.join(BASE_DIR, "Training set")
-TRAINING_SET_FILENAME = "hyper.xlsx"
-SHEET_NAME = "hyper"
+HYPER_TRAINING_SET = "hyper.xlsx"
+HYPER_SHEET_NAME = "hyper"
 
 CLASSIFIERS_DIR = path.join(BASE_DIR, "Classifiers")
 
