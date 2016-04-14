@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from itertools import chain
 from os import path
 
@@ -7,6 +8,16 @@ from sklearn.tree import DecisionTreeClassifier
 from src.factories import LearningSetFactory, ClassifierFactory
 from src.settings import CLASSIFIERS_DIR, TRAINING_SET_DIR, ALGORITHMS, METHODS
 from src.utils import save_object
+
+
+def get_arguments():
+    parser = ArgumentParser("Classifier")
+    parser.add_argument('--n-jobs', '-n', default=-1, type=int, help="Number of used CPU cores. Default: all cores")
+    parser.add_argument('--method', '-m', default='dynamic_multiclass',
+                        choices=['dynamic_multiclass', 'ensemble', 'all'],
+                        type=str, help="This parameter determines which classifiers will be created.")
+
+    return parser.parse_args()
 
 
 def create_classifiers(name, algorithm_class, train_set, train_labels, *args, **kwargs):
@@ -26,6 +37,8 @@ def create_classifiers(name, algorithm_class, train_set, train_labels, *args, **
 
 
 def main():
+    args = get_arguments()
+
     print("Getting learning sets...")
 
     train_set, train_labels, test_set, test_labels = \
@@ -40,15 +53,27 @@ def main():
     keywords_ensemble = {'n_estimators': 50}
     keywords_multiclass = {'n_jobs': -1}  # -1 means: use all CPUs
 
-    Parallel(n_jobs=-1)(chain((delayed(create_classifiers)
-                               (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
-                               for name, algorithm_class in ALGORITHMS.items()
-                               if name in METHODS['ensemble']),
-                              (delayed(create_classifiers)
-                               (name, algorithm_class, train_set, train_labels,
-                                DecisionTreeClassifier(), **keywords_multiclass)
-                               for name, algorithm_class in ALGORITHMS.items()
-                               if name in METHODS['multiclass'])))
+    if args.method == 'dynamic_multiclass':
+        Parallel(n_jobs=-args.n_jobs)(delayed(create_classifiers)
+                                             (name, algorithm_class, train_set, train_labels, DecisionTreeClassifier(),
+                                              **keywords_multiclass)
+                                              for name, algorithm_class in ALGORITHMS.items()
+                                              if name in METHODS['multiclass'])
+    elif args.method == 'ensemble':
+        Parallel(n_jobs=-args.n_jobs)(delayed(create_classifiers)
+                                      (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
+                                      for name, algorithm_class in ALGORITHMS.items()
+                                      if name in METHODS['ensemble'])
+    elif args.method == 'all':
+        Parallel(n_jobs=-args.n_jobs)(chain((delayed(create_classifiers)
+                                   (name, algorithm_class, train_set, train_labels, **keywords_ensemble)
+                                   for name, algorithm_class in ALGORITHMS.items()
+                                   if name in METHODS['ensemble']),
+                                  (delayed(create_classifiers)
+                                   (name, algorithm_class, train_set, train_labels,
+                                    DecisionTreeClassifier(), **keywords_multiclass)
+                                   for name, algorithm_class in ALGORITHMS.items()
+                                   if name in METHODS['multiclass'])))
 
     print("Done.")
 
