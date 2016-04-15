@@ -1,5 +1,6 @@
 from itertools import chain
 from os import path
+from warnings import filterwarnings
 
 from joblib import Parallel
 
@@ -11,6 +12,7 @@ from src.utils.tools import save_object, get_arguments
 
 def main():
     args = get_arguments("Classifier Creator")
+    filterwarnings("ignore")
 
     print("Getting learning sets...")
 

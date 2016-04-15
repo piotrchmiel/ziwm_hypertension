@@ -31,6 +31,11 @@ class SklearnWrapper(object):
         pred = [self.classify(feature_set) for feature_set in X]
         return accuracy_score(y, pred) * 100
 
+    def get_classifier(self):
+        return self._clf_pipeline
+
+    def fit_encoder(self, y):
+        self._encoder.fit_transform(y)
 
 class TwoLayerClassifier(object):
 

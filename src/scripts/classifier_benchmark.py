@@ -1,5 +1,6 @@
 from itertools import chain
 from os import path, listdir
+from warnings import filterwarnings
 
 from joblib import Parallel, delayed
 
@@ -21,11 +22,13 @@ def get_benchmark(method, test_set, test_labels):
 
 def main():
     args = get_arguments("Classifier Benchmark")
+    filterwarnings("ignore")
     print("Loading test set...")
 
     test_set, test_labels = load_object(path.join(TRAINING_SET_DIR, 'test_set.pickle'))
-
     print("Benchmark")
+
+    print("Number of samples in test set:", len(test_labels))
 
     if args.method == MULTICLASS:
         bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(MULTICLASS, test_set, test_labels))

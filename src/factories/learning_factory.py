@@ -55,7 +55,7 @@ class LearningSetFactory(object):
         parser = ExcelParser(learning_set_path, sheet_name)
         learning_set = [row for row in parser.get_rows()]
         learning_labels = []
-        for feature_set in learning_labels:
+        for feature_set in learning_set:
             learning_labels.append(feature_set[classname_column])
             del feature_set[classname_column]
         return learning_set, learning_labels
