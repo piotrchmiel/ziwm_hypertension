@@ -29,5 +29,3 @@ def get_arguments(script_name):
                         type=str, help="This parameter determines which classifiers will be created.")
 
     return parser.parse_args()
-
-

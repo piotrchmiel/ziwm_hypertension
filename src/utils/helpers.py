@@ -9,12 +9,13 @@ from sklearn.utils.validation import _num_samples
 from src.factories.classifier_factory import ClassifierFactory
 
 
-def cross_val_score(classifiers_to_test, X, y=None, cv=None, n_jobs=1):
+def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierFactory.make_multiclass_classifier,
+                    n_jobs=1):
     X, y = indexable(X, y)
 
     cv = StratifiedKFold(y, cv, shuffle=True)
 
-    scores = Parallel(n_jobs=n_jobs)(delayed(fit_and_score)(algorithm_info, X, y, train, test)
+    scores = Parallel(n_jobs=n_jobs)(delayed(fit_and_score)(algorithm_info, factory, X, y, train, test)
                                      for algorithm_info in classifiers_to_test.values() for train, test in cv )
 
     final_results = []
@@ -30,11 +31,11 @@ def cross_val_score(classifiers_to_test, X, y=None, cv=None, n_jobs=1):
     return '\n'.join(sorted(final_results))
 
 
-def fit_and_score(algorithm_info, X, y, train, test):
+def fit_and_score(algorithm_info, factory, X, y, train, test):
     start_time = time()
     train_set = (X[number] for number in train)
     train_labels = [y[number] for number in train]
-    classifier = ClassifierFactory.make_multiclass_classifier(algorithm_info[0], train_set, train_labels,
+    classifier = factory(algorithm_info[0], train_set, train_labels,
                                                               **algorithm_info[1])
     test_set = (X[number] for number in test)
     test_labels = [y[number] for number in test]

@@ -1,6 +1,7 @@
 from itertools import chain
 from warnings import filterwarnings
 
+from src.factories.classifier_factory import ClassifierFactory
 from src.factories.learning_factory import LearningSetFactory
 from src.settings import METHODS, MULTICLASS, ENSEMBLE
 from src.utils.helpers import cross_val_score
@@ -20,9 +21,15 @@ def main():
         print(cross_val_score(METHODS[MULTICLASS], train_set, train_labels, n_jobs=args.n_jobs, cv=10))
     elif args.method == ENSEMBLE:
         print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels, n_jobs=args.n_jobs, cv=10))
+        print("Two Layer:")
+        print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels, n_jobs=args.n_jobs,
+                              factory=ClassifierFactory.make_two_layer_classifier, cv=10))
     elif args.method == 'all':
         print(cross_val_score(chain(METHODS[MULTICLASS], METHODS[ENSEMBLE]),
                               train_set, train_labels, n_jobs=args.n_jobs, cv=10))
+        print("Two Layer:")
+        print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels, n_jobs=args.n_jobs,
+                              factory=ClassifierFactory.make_two_layer_classifier, cv=10))
 
 if __name__ == '__main__':
     main()
