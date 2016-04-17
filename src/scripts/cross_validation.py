@@ -14,7 +14,7 @@ def main():
     print("Start Cross Validation")
 
     train_set, train_labels = LearningSetFactory.get_full_learning_set_with_labels(
-        LearningSetFactory.DataSource.hypertension)
+        getattr(LearningSetFactory.DataSource, args.dataset))
 
     print("Number of samples in learning set:", len(train_labels))
     if args.method == MULTICLASS:

@@ -15,6 +15,11 @@ MULTICLASS = 'multiclass'
 TRAINING_SET_DIR = path.join(BASE_DIR, "Training set")
 HYPER_TRAINING_SET = "hyper.xlsx"
 HYPER_SHEET_NAME = "hyper"
+ISOLET_TRAINING_SET = "isolet.csv"
+AUSLAN_TRAINING_SET = "auslan.csv"
+ABALONE_TRAINING_SET = "abalone.csv"
+LETTER_TRAINING_SET = "letter.csv"
+KDDCUP_TRAINING_SET = "kddcup.csv"
 
 CLASSIFIERS_DIR = path.join(BASE_DIR, "Classifiers")
 

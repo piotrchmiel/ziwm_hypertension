@@ -19,7 +19,7 @@ class ExcelParser(object):
             feature_set = {}
             for key, cell in zip(self.keys, row):
                 feature_set[key] = cell.value
-                if key != "wy" and (isinstance(feature_set[key], int) or
+                if key != self.keys[-1] and (isinstance(feature_set[key], int) or
                                     (isinstance(feature_set[key], str) and
                                      feature_set[key] != '?')):
                     feature_set[key] = float(feature_set[key])

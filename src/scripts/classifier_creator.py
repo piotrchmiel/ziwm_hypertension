@@ -14,10 +14,10 @@ def main():
     args = get_arguments("Classifier Creator")
     filterwarnings("ignore")
 
-    print("Getting learning sets...")
+    print("Getting learning sets, using:", args.dataset.upper())
 
     train_set, train_labels, test_set, test_labels = \
-        LearningSetFactory.get_learning_sets_and_labels(0.8, LearningSetFactory.DataSource.hypertension)
+        LearningSetFactory.get_learning_sets_and_labels(0.8, getattr(LearningSetFactory.DataSource, args.dataset))
 
     save_object(path.join(TRAINING_SET_DIR, "train_set.pickle"), [train_set, train_labels])
     save_object(path.join(TRAINING_SET_DIR, "test_set.pickle"), [test_set, test_labels])
