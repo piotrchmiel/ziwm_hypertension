@@ -26,14 +26,14 @@ def main():
     print("Loading test set...")
 
     test_set, test_labels = load_object(path.join(TRAINING_SET_DIR, 'test_set.pickle'))
-    print("Benchmark")
 
     print("Number of samples in test set:", len(test_labels))
+    print(args.method)
 
     if args.method == MULTICLASS:
         bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(MULTICLASS, test_set, test_labels))
     elif args.method == ENSEMBLE:
-        bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(MULTICLASS, test_set, test_labels))
+        bench_results = Parallel(n_jobs=args.n_jobs)(get_benchmark(ENSEMBLE, test_set, test_labels))
     elif args.method == 'all':
         bench_results = Parallel(n_jobs=args.n_jobs)(chain(get_benchmark(MULTICLASS, test_set, test_labels),
                                                            get_benchmark(ENSEMBLE, test_set, test_labels)))

@@ -37,6 +37,7 @@ class SklearnWrapper(object):
     def fit_encoder(self, y):
         self._encoder.fit_transform(y)
 
+
 class TwoLayerClassifier(object):
 
     def __init__(self, first_layer, second_layer, main_class):
@@ -48,14 +49,13 @@ class TwoLayerClassifier(object):
         return "<TwoLayerClassifier>"
 
     def train(self, X, y):
+        X = list(X)
         first_layer_labels = []
         for label in y:
             if label != self.main_class:
                 first_layer_labels.append("secondary_type")
             else:
                 first_layer_labels.append(label)
-
-        self.first_layer.train(X, first_layer_labels)
 
         second_layer_data = []
         second_layer_labels = []
@@ -64,6 +64,7 @@ class TwoLayerClassifier(object):
                 second_layer_data.append(feature_set)
                 second_layer_labels.append(label)
 
+        self.first_layer.train(X, first_layer_labels)
         self.second_layer.train(second_layer_data, second_layer_labels)
 
     def classify(self, feature_set):
