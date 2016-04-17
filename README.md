@@ -20,9 +20,19 @@ Testing method  : Cross Validation
 
 Number of folds : 10
 ### Ensemble Methods
+Data set: Hypertension
+
+|               |  Multiclass  |   Two Stage  |
+|:-------------:|:------------:|:------------:|
+| **Algorithm** |**Accuracy [%]**|**Accuracy [%]**|
+| Ada Boost     |    44.432    |    72.611    |
+| Random Forest |    73.878    |    73.974    |
+| Bagging       |    73.756    |    71.802    |
 
 ### Multiclass Methods
-#### Data Set = Hypertension
+
+Data Set: Hypertension
+
 |                      | Threshold 0% | Threshold 5% | Threshold 10% |
 |:--------------------:|:------------:|:------------:|:-------------:|
 | **Algorithm**        | **Accuracy [%]** | **Accuracy [%]** |  **Accuracy [%]** |
