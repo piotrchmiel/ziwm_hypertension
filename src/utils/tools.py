@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from csv import reader
+
 from joblib import dump, load
 
 
@@ -27,7 +27,7 @@ def get_arguments(script_name):
     parser.add_argument('--method', '-m', default='multiclass',
                         choices=['multiclass', 'ensemble', 'all'],
                         type=str, help="This parameter determines which classifiers will be created.")
-    parser.add_argument('--dataset', '-d', default='mnist',
+    parser.add_argument('--dataset', '-d', default='hypertension',
                         choices=['hypertension', 'mnist', 'isolet', 'auslan', 'abalone', 'letter', 'kddcup'],
                         type=str, help="This parameter determines which dataset will be used for learning.")
 

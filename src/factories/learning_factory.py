@@ -9,8 +9,8 @@ from mnist import MNIST
 from src.settings import TRAINING_SET_DIR, HYPER_SHEET_NAME, \
     HYPER_TRAINING_SET, ISOLET_TRAINING_SET, AUSLAN_TRAINING_SET, \
     ABALONE_TRAINING_SET, LETTER_TRAINING_SET, KDDCUP_TRAINING_SET
-from src.utils.excel import ExcelParser
 from src.utils.csv_parser import CsvParser
+from src.utils.excel import ExcelParser
 
 TRAINING_SET_MAP = {
     0: HYPER_TRAINING_SET,
@@ -21,6 +21,7 @@ TRAINING_SET_MAP = {
     5: LETTER_TRAINING_SET,
     6: KDDCUP_TRAINING_SET
 }
+
 
 class LearningSetFactory(object):
 
