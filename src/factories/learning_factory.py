@@ -4,7 +4,7 @@ from itertools import chain
 from os import path
 from random import shuffle
 
-from mnist import MNIST
+from src.utils.mnist_loader import MNIST
 
 from src.settings import TRAINING_SET_DIR, HYPER_SHEET_NAME, \
     HYPER_TRAINING_SET, ISOLET_TRAINING_SET, AUSLAN_TRAINING_SET, \
@@ -85,21 +85,17 @@ class LearningSetFactory(object):
 
     @staticmethod
     def get_mnist_training_set_and_labels(percent_of_train_set, learning_set_path):
-        images, labels = LearningSetFactory.get_full_mnist_training_set_and_labels(learning_set_path)
-        records = [data + [label] for data, label in zip(images, labels)]
-        return LearningSetFactory._get_training_sets_and_labels(percent_of_train_set, records, 'Class')
+        mndata = MNIST(learning_set_path)
+        learning_set = [row for row in mndata.load_yield()]
+        return LearningSetFactory._get_training_sets_and_labels(percent_of_train_set, learning_set,
+                                                                mndata.get_keys()[-1])
 
     @staticmethod
     def get_full_mnist_training_set_and_labels(learning_set_path):
         mndata = MNIST(learning_set_path)
-        training_images, training_labels = mndata.load_training()
-        testing_images, testing_labels = mndata.load_testing()
-        dataset = training_images + testing_images
-        labels = training_labels + testing_labels
-        keys = ['Atr-%d' % i for i in range(1, len(dataset[0]) + 1)]
-        keys.append('Class')
-        dataset_with_attributes = [dict(zip(keys, record)) for record in dataset]
-        return dataset_with_attributes, labels
+        learning_set = [row for row in mndata.load_yield()]
+        learning_labels = LearningSetFactory._extract_labels(learning_set, mndata.get_keys()[-1])
+        return learning_set, learning_labels
 
     @staticmethod
     def _extract_labels(learning_set, classname_column):
