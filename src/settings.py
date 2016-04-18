@@ -13,6 +13,7 @@ ENSEMBLE = 'ensemble'
 MULTICLASS = 'multiclass'
 
 TRAINING_SET_DIR = path.join(BASE_DIR, "Training set")
+TIME_BENCH_DIR = path.join(BASE_DIR, "Time Benchmark")
 HYPER_TRAINING_SET = "hyper.xlsx"
 HYPER_SHEET_NAME = "hyper"
 ISOLET_TRAINING_SET = "isolet.csv"

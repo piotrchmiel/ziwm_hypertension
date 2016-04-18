@@ -1,12 +1,21 @@
+from cProfile import Profile
+from os import path
+from pstats import Stats
 from time import time
+from timeit import timeit
 
 import numpy as np
 from joblib import Parallel, delayed
+from pycallgraph import PyCallGraph
+from pycallgraph.output import GraphvizOutput
+from pyprof2calltree import convert
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.utils import indexable
 from sklearn.utils.validation import _num_samples
 
+from src.classifiers.sklearn_wrapper import SklearnWrapper
 from src.factories.classifier_factory import ClassifierFactory
+from src.settings import TIME_BENCH_DIR
 
 
 def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierFactory.make_multiclass_classifier,
@@ -43,3 +52,40 @@ def fit_and_score(algorithm_info, factory, X, y, train, test):
     scoring_time = time() - start_time
 
     return [train_score, _num_samples(test), scoring_time]
+
+
+def time_benchmark(classifier_name, algorithm_info, train_set, train_labels, n_times=1, n_jobs=1,
+                   profile=False, generate_graph=False):
+
+    cpu = str(n_jobs) + "CPU" if n_jobs > 0 else "all CPUs"
+    print(classifier_name, cpu)
+    elapsed_timeit = 0
+    elapsed_time = 0
+    algorithm_info[1]['n_jobs'] = n_jobs
+
+    for _ in range(n_times):
+
+        classifier_timeit = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
+        elapsed_timeit += timeit('classifier.train(X,y)', number=1, globals={'classifier': classifier_timeit,
+                                                                             'X': train_set, 'y': train_labels})
+
+        classifier_time = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
+        start = time()
+        classifier_time.train(train_set, train_labels)
+        elapsed_time += time() - start
+
+    if profile:
+        classifier_cprofile = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
+        profiler = Profile()
+        profiler.runctx('classifier_cprofile.train(train_set, train_labels)', globals(), locals())
+        profiler.dump_stats(path.join(TIME_BENCH_DIR, "".join([classifier_name, '_', str(n_jobs), ".dat"])))
+        convert(Stats(profiler), path.join(TIME_BENCH_DIR, "".join([classifier_name, '_', str(n_jobs), ".profile"])))
+        print("Dump CProfile data to",TIME_BENCH_DIR, "done.")
+
+    if generate_graph:
+        classifier_graph = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
+        with PyCallGraph(output=GraphvizOutput()):
+            classifier_graph.train(train_set, train_labels)
+
+    print("Timeit : {0:.6f} s".format(elapsed_timeit/n_times))
+    print("Time   : {0:.6f} s".format(elapsed_time/n_times))
