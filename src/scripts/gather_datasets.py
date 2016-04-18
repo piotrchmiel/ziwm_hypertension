@@ -71,7 +71,8 @@ datasets = {
 
 
 def main():
-    training_root = pjoin(split(dirname(realpath(__file__)))[0], 'Training set')
+    training_root = pjoin(split(dirname(dirname(realpath(__file__))))[0], 'Training set')
+
     for dataset, items in datasets.items():
         print('Getting dataset', dataset.upper(), 'if needed...')
         # download datasets
@@ -102,7 +103,8 @@ def main():
         if type(items['files']) == dict:
             print('Renaming files')
             for source, destination in items['files'].items():
-                move(pjoin(training_root, source), pjoin(training_root, destination))
+                if not exists(pjoin(training_root, destination)):
+                    move(pjoin(training_root, source), pjoin(training_root, destination))
         out_filename = pjoin(training_root, items['out'])
         print('Generating output files')
         if items['operation'] == 'auslan_concat':
