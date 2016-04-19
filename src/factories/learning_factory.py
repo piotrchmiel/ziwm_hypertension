@@ -1,10 +1,7 @@
-from collections import defaultdict
 from enum import Enum
-from itertools import chain
 from os import path
-from random import shuffle
 
-from src.utils.mnist_loader import MNIST
+from sklearn.datasets import fetch_mldata
 
 from src.settings import TRAINING_SET_DIR, HYPER_SHEET_NAME, \
     HYPER_TRAINING_SET, ISOLET_TRAINING_SET, AUSLAN_TRAINING_SET, \
@@ -35,33 +32,17 @@ class LearningSetFactory(object):
         kddcup = 6
 
     @staticmethod
-    def get_learning_sets_and_labels(percent_of_train_set, data_source):
-        if data_source == LearningSetFactory.DataSource.hypertension:
-            return LearningSetFactory.get_excel_training_sets_and_labels(percent_of_train_set, path.join(
-                TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]), HYPER_SHEET_NAME, 'wy')
-        elif data_source == LearningSetFactory.DataSource.mnist:
-            return LearningSetFactory.get_mnist_training_set_and_labels(percent_of_train_set, TRAINING_SET_DIR)
-        else:
-            return LearningSetFactory.get_csv_training_sets_and_labels(percent_of_train_set, path.join(
-                TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]))
-
-    @staticmethod
     def get_full_learning_set_with_labels(data_source):
         if data_source == LearningSetFactory.DataSource.hypertension:
             return LearningSetFactory.get_full_excel_learning_set_and_labels(path.join(
                 TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]), HYPER_SHEET_NAME, 'wy')
         elif data_source == LearningSetFactory.DataSource.mnist:
-            return LearningSetFactory.get_full_mnist_training_set_and_labels(path.join(
-                TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]))
+            return LearningSetFactory.get_full_mnist_training_set_and_labels()
         else:
             return LearningSetFactory.get_full_csv_learning_set_and_labels(path.join(
                 TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]))
 
-    @staticmethod
-    def get_excel_training_sets_and_labels(percent_of_train_set, learning_set_path, sheet_name, classname_column):
-        parser = ExcelParser(learning_set_path, sheet_name)
-        return LearningSetFactory._get_training_sets_and_labels(percent_of_train_set,
-                                                                parser.get_rows(), classname_column)
+
 
     @staticmethod
     def get_full_excel_learning_set_and_labels(learning_set_path, sheet_name, classname_column):
@@ -70,11 +51,6 @@ class LearningSetFactory(object):
         learning_labels = LearningSetFactory._extract_labels(learning_set, classname_column)
         return learning_set, learning_labels
 
-    @staticmethod
-    def get_csv_training_sets_and_labels(percent_of_train_set, learning_set_path):
-        parser = CsvParser(learning_set_path)
-        return LearningSetFactory._get_training_sets_and_labels(percent_of_train_set, parser.get_rows(),
-                                                                parser.get_keys()[-1])
 
     @staticmethod
     def get_full_csv_learning_set_and_labels(learning_set_path):
@@ -84,18 +60,11 @@ class LearningSetFactory(object):
         return learning_set, learning_labels
 
     @staticmethod
-    def get_mnist_training_set_and_labels(percent_of_train_set, learning_set_path):
-        mndata = MNIST(learning_set_path)
-        learning_set = [row for row in mndata.load_yield()]
-        return LearningSetFactory._get_training_sets_and_labels(percent_of_train_set, learning_set,
-                                                                mndata.get_keys()[-1])
-
-    @staticmethod
-    def get_full_mnist_training_set_and_labels(learning_set_path):
-        mndata = MNIST(learning_set_path)
-        learning_set = [row for row in mndata.load_yield()]
-        learning_labels = LearningSetFactory._extract_labels(learning_set, mndata.get_keys()[-1])
-        return learning_set, learning_labels
+    def get_full_mnist_training_set_and_labels():
+        print("Getting mnist..")
+        mnist = fetch_mldata('MNIST original')
+        print("Done")
+        return mnist.data, mnist.target
 
     @staticmethod
     def _extract_labels(learning_set, classname_column):
@@ -105,25 +74,4 @@ class LearningSetFactory(object):
             del feature_set[classname_column]
         return learning_labels
 
-    @staticmethod
-    def _get_training_sets_and_labels(percent_of_train_set, records, classname_column):
-        feature_dict = defaultdict(list)
-        for row in records:
-            feature_dict[row[classname_column]].append(row)
 
-        train_set = []
-        test_set = []
-
-        for value in feature_dict.values():
-            shuffle(value)
-            slice_point = int(percent_of_train_set * len(value))
-            train_set.extend(value[:slice_point])
-            test_set.extend(value[slice_point:])
-
-        train_labels = [feature_set[classname_column] for feature_set in train_set]
-        test_labels = [feature_set[classname_column] for feature_set in test_set]
-
-        for feature_set in chain(train_set, test_set):
-            del feature_set[classname_column]
-
-        return train_set, train_labels, test_set, test_labels

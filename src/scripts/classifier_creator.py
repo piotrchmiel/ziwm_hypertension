@@ -1,26 +1,23 @@
 from itertools import chain
-from os import path
 from warnings import filterwarnings
 
 from joblib import Parallel
 
 from src.factories.classifier_factory import get_creator
 from src.factories.learning_factory import LearningSetFactory
-from src.settings import TRAINING_SET_DIR, MULTICLASS, ENSEMBLE
-from src.utils.tools import save_object, get_arguments
+from src.settings import MULTICLASS, ENSEMBLE
+from src.utils.tools import get_arguments
 
 
 def main():
+    print("Classifier Creator")
     args = get_arguments("Classifier Creator")
     filterwarnings("ignore")
 
     print("Getting learning sets, using:", args.dataset.upper())
 
-    train_set, train_labels, test_set, test_labels = \
-        LearningSetFactory.get_learning_sets_and_labels(0.8, getattr(LearningSetFactory.DataSource, args.dataset))
-
-    save_object(path.join(TRAINING_SET_DIR, "train_set.pickle"), [train_set, train_labels])
-    save_object(path.join(TRAINING_SET_DIR, "test_set.pickle"), [test_set, test_labels])
+    train_set, train_labels = \
+        LearningSetFactory.get_full_learning_set_with_labels(getattr(LearningSetFactory.DataSource, args.dataset))
 
     print("Done.")
     print("Creating classifiers...")

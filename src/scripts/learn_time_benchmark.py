@@ -13,8 +13,8 @@ def main():
 
     print("Getting learning sets, using:", args.dataset.upper())
 
-    train_set, train_labels, _, _ = \
-        LearningSetFactory.get_learning_sets_and_labels(0.8, getattr(LearningSetFactory.DataSource, args.dataset))
+    train_set, train_labels = LearningSetFactory.get_full_learning_set_with_labels(
+        getattr(LearningSetFactory.DataSource, args.dataset))
 
     if args.method == MULTICLASS:
         for classifier_name, algorithm_info in METHODS[MULTICLASS].items():

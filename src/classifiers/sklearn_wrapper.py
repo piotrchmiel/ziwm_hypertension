@@ -1,3 +1,4 @@
+import numpy
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import accuracy_score
 from sklearn.pipeline import make_pipeline
@@ -18,6 +19,10 @@ class SklearnWrapper(object):
         return "<SklearnWrapper(%r)>" % self._clf_pipeline
 
     def train(self, X, y):
+
+        if isinstance(X, numpy.core.memmap):
+            self._clf_pipeline.steps.pop(0)
+
         y = self._encoder.fit_transform(y)
         self._clf_pipeline.fit(X, y)
 
