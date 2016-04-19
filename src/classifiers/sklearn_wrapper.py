@@ -19,9 +19,8 @@ class SklearnWrapper(object):
         return "<SklearnWrapper(%r)>" % self._clf_pipeline
 
     def train(self, X, y):
-
-        if isinstance(X, numpy.core.memmap):
-            self._clf_pipeline.steps.pop(0)
+        if isinstance(X, numpy.core.memmap) or isinstance(X, numpy.ndarray):
+            self._clf_pipeline = self._classifier
 
         y = self._encoder.fit_transform(y)
         self._clf_pipeline.fit(X, y)

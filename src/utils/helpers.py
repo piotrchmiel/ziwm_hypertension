@@ -9,8 +9,8 @@ from joblib import Parallel, delayed
 from pycallgraph import PyCallGraph
 from pycallgraph.output import GraphvizOutput
 from pyprof2calltree import convert
-from sklearn.cross_validation import StratifiedKFold
-from sklearn.utils import indexable
+from sklearn.cross_validation import StratifiedKFold, _safe_split
+from sklearn.utils import indexable, safe_indexing
 from sklearn.utils.validation import _num_samples
 
 from src.classifiers.sklearn_wrapper import SklearnWrapper
@@ -25,7 +25,7 @@ def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierF
     cv = StratifiedKFold(y, cv, shuffle=True)
 
     scores = Parallel(n_jobs=n_jobs)(delayed(fit_and_score)(algorithm_info, factory, X, y, train, test)
-                                     for algorithm_info in classifiers_to_test.values() for train, test in cv )
+                                     for algorithm_info in classifiers_to_test.values() for train, test in cv)
 
     final_results = []
 
@@ -42,12 +42,21 @@ def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierF
 
 def fit_and_score(algorithm_info, factory, X, y, train, test):
     start_time = time()
-    train_set = (X[number] for number in train)
-    train_labels = [y[number] for number in train]
-    classifier = factory(algorithm_info[0], train_set, train_labels,
-                                                              **algorithm_info[1])
-    test_set = (X[number] for number in test)
-    test_labels = [y[number] for number in test]
+    if isinstance(X, np.core.memmap):
+        train_set,  train_labels = _safe_split(algorithm_info[0], X, y, train)
+    else:
+        train_set = safe_indexing(X, train)
+        train_labels = safe_indexing(y, train)
+
+    classifier = factory(algorithm_info[0], train_set, train_labels, **algorithm_info[1])
+
+    if isinstance(X, np.core.memmap):
+        test_set = safe_indexing(X, test)
+        test_labels = safe_indexing(y, test)
+    else:
+        test_set = (X[number] for number in test)
+        test_labels = [y[number] for number in test]
+
     train_score = classifier.accuracy(test_set, test_labels)
     scoring_time = time() - start_time
 
