@@ -7,22 +7,6 @@ from urllib.request import urlretrieve
 from patoolib import extract_archive
 
 datasets = {
-    'mnist': {
-        'download': [
-            'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
-            'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
-            'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
-            'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
-        ],
-        'files': {
-            'train-images.idx3-ubyte': 'train-images-idx3-ubyte',
-            'train-labels.idx1-ubyte': 'train-labels-idx1-ubyte',
-            't10k-images.idx3-ubyte': 't10k-images-idx3-ubyte',
-            't10k-labels.idx1-ubyte': 't10k-labels-idx1-ubyte'
-        },
-        'operation': 'nop',
-        'out': ''
-    },
     'auslan': {
         'download': [
             'http://archive.ics.uci.edu/ml/machine-learning-databases/auslan2-mld/tctodd.tar.gz'
@@ -42,22 +26,6 @@ datasets = {
         ],
         'operation': 'concat',
         'out': 'isolet.csv'
-    },
-    'abalone': {
-        'download': [
-            'http://sci2s.ugr.es/keel/dataset/data/classification/abalone.zip'
-        ],
-        'files': ['abalone.dat'],
-        'operation': 'dat2csv',
-        'out': 'abalone.csv'
-    },
-    'letter': {
-        'download': [
-            'http://sci2s.ugr.es/keel/dataset/data/classification/letter.zip'
-        ],
-        'files': ['letter.dat'],
-        'operation': 'dat2csv',
-        'out': 'letter.csv'
     },
     'kddcup': {
         'download': [
@@ -100,11 +68,6 @@ def main():
                     extract_archive(archive, outdir=dirname(archive), verbosity=-1, interactive=False)
 
         # generate output files
-        if type(items['files']) == dict:
-            print('Renaming files')
-            for source, destination in items['files'].items():
-                if not exists(pjoin(training_root, destination)):
-                    move(pjoin(training_root, source), pjoin(training_root, destination))
         out_filename = pjoin(training_root, items['out'])
         print('Generating output files')
         if items['operation'] == 'auslan_concat':
