@@ -13,10 +13,13 @@ def main():
     filterwarnings("ignore")
     print("Start Cross Validation")
 
+    print("Using:", args.dataset.upper())
+
     train_set, train_labels = LearningSetFactory.get_full_learning_set_with_labels(
         getattr(LearningSetFactory.DataSource, args.dataset))
 
     print("Number of samples in learning set:", len(train_labels))
+
     if args.method == MULTICLASS:
         print(cross_val_score(METHODS[MULTICLASS], train_set, train_labels, n_jobs=args.n_jobs, cv=10))
     elif args.method == ENSEMBLE:
