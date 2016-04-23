@@ -21,8 +21,8 @@ class SklearnWrapper(object):
     def train(self, X, y):
         if isinstance(X, numpy.core.memmap) or isinstance(X, numpy.ndarray):
             self._clf_pipeline = self._classifier
-
-        y = self._encoder.fit_transform(y)
+        else:
+            y = self._encoder.fit_transform(y)
         self._clf_pipeline.fit(X, y)
 
     def classify(self, feature_set):
@@ -32,8 +32,11 @@ class SklearnWrapper(object):
         return self._encoder.classes_
 
     def accuracy(self, X, y):
-        pred = [self.classify(feature_set) for feature_set in X]
-        return accuracy_score(y, pred) * 100
+        if isinstance(X, numpy.core.memmap) or isinstance(X, numpy.ndarray):
+            pred = [self.classify(feature_set) for feature_set in X]
+            return accuracy_score(y, pred) * 100
+        else:
+            return self._clf_pipeline.predict.score(X, y)
 
     def get_classifier(self):
         return self._clf_pipeline

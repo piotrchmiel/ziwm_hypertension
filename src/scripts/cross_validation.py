@@ -14,6 +14,7 @@ def main():
     print("Start Cross Validation")
 
     print("Using:", args.dataset.upper())
+    print("N Jobs:", args.n_jobs)
 
     train_set, train_labels = LearningSetFactory.get_full_learning_set_with_labels(
         getattr(LearningSetFactory.DataSource, args.dataset))
