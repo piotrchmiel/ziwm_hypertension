@@ -46,6 +46,9 @@ def fit_and_score(algorithm_info, factory, X, y, train, test):
     train_set = safe_indexing(X, train)
     train_labels = safe_indexing(y, train)
 
+    if 'n_neighbors' in algorithm_info[1]:
+        algorithm_info[1]['n_neighbors'] = 3 * len(set(y))
+
     classifier = factory(algorithm_info[0], train_set, train_labels, **algorithm_info[1])
 
     test_set = safe_indexing(X, test)
