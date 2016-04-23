@@ -42,7 +42,7 @@ def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierF
 
 def fit_and_score(algorithm_info, factory, X, y, train, test):
     start_time = time()
-    if isinstance(X, np.core.memmap):
+    if isinstance(X, np.core.memmap) or isinstance(X, np.ndarray):
         train_set,  train_labels = _safe_split(algorithm_info[0], X, y, train)
     else:
         train_set = safe_indexing(X, train)
@@ -50,7 +50,7 @@ def fit_and_score(algorithm_info, factory, X, y, train, test):
 
     classifier = factory(algorithm_info[0], train_set, train_labels, **algorithm_info[1])
 
-    if isinstance(X, np.core.memmap):
+    if isinstance(X, np.core.memmap) or isinstance(X, np.ndarray):
         test_set = safe_indexing(X, test)
         test_labels = safe_indexing(y, test)
     else:
