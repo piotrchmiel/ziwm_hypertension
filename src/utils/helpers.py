@@ -9,7 +9,7 @@ from joblib import Parallel, delayed
 from pycallgraph import PyCallGraph
 from pycallgraph.output import GraphvizOutput
 from pyprof2calltree import convert
-from sklearn.cross_validation import StratifiedKFold, _safe_split
+from sklearn.cross_validation import StratifiedKFold
 from sklearn.utils import indexable, safe_indexing
 from sklearn.utils.validation import _num_samples
 
@@ -42,21 +42,14 @@ def cross_val_score(classifiers_to_test, X, y=None, cv=None, factory=ClassifierF
 
 def fit_and_score(algorithm_info, factory, X, y, train, test):
     start_time = time()
-    if isinstance(X, np.core.memmap) or isinstance(X, np.ndarray):
-        train_set,  train_labels = _safe_split(algorithm_info[0], X, y, train)
-    else:
-        train_set = safe_indexing(X, train)
-        train_labels = safe_indexing(y, train)
+
+    train_set = safe_indexing(X, train)
+    train_labels = safe_indexing(y, train)
 
     classifier = factory(algorithm_info[0], train_set, train_labels, **algorithm_info[1])
 
-    if isinstance(X, np.core.memmap) or isinstance(X, np.ndarray):
-        test_set = safe_indexing(X, test)
-        test_labels = safe_indexing(y, test)
-    else:
-        test_set = (X[number] for number in test)
-        test_labels = [y[number] for number in test]
-
+    test_set = safe_indexing(X, test)
+    test_labels = safe_indexing(y, test)
     train_score = classifier.accuracy(test_set, test_labels)
     scoring_time = time() - start_time
 
