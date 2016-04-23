@@ -36,7 +36,7 @@ class SklearnWrapper(object):
             pred = [self.classify(feature_set) for feature_set in X]
             return accuracy_score(y, pred) * 100
         else:
-            return self._clf_pipeline.predict.score(X, y)
+            return self._clf_pipeline.score(X, y)
 
     def get_classifier(self):
         return self._clf_pipeline
