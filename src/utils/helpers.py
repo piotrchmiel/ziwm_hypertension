@@ -68,6 +68,9 @@ def time_benchmark(classifier_name, algorithm_info, train_set, train_labels, n_t
     elapsed_time = 0
     algorithm_info[1]['n_jobs'] = n_jobs
 
+    if 'n_neighbors' in algorithm_info[1]:
+        algorithm_info[1]['n_neighbors'] = 3 * len(set(train_labels))
+
     for _ in range(n_times):
 
         classifier_timeit = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
