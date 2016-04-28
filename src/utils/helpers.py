@@ -1,3 +1,4 @@
+from copy import deepcopy
 from cProfile import Profile
 from os import path
 from pstats import Stats
@@ -75,11 +76,12 @@ def time_benchmark(classifier_name, algorithm_info, train_set, train_labels, n_t
 
         classifier_timeit = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
         elapsed_timeit += timeit('classifier.train(X,y)', number=1, globals={'classifier': classifier_timeit,
-                                                                             'X': train_set, 'y': train_labels})
+                                                                             'X': deepcopy(train_set),
+                                                                             'y': deepcopy(train_labels)})
 
         classifier_time = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
         start = time()
-        classifier_time.train(train_set, train_labels)
+        classifier_time.train(deepcopy(train_set), deepcopy(train_labels))
         elapsed_time += time() - start
 
     if profile:
@@ -93,7 +95,7 @@ def time_benchmark(classifier_name, algorithm_info, train_set, train_labels, n_t
     if generate_graph:
         classifier_graph = SklearnWrapper(algorithm_info[0](**algorithm_info[1]))
         with PyCallGraph(output=GraphvizOutput()):
-            classifier_graph.train(train_set, train_labels)
+            classifier_graph.train(deepcopy(train_set), deepcopy(train_labels))
 
     print("Timeit : {0:.6f} s".format(elapsed_timeit/n_times))
     print("Time   : {0:.6f} s".format(elapsed_time/n_times))
