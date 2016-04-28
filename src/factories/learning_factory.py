@@ -1,6 +1,7 @@
 from enum import Enum
 from os import path
 
+import numpy as np
 from sklearn.datasets import fetch_mldata
 
 from src.settings import TRAINING_SET_DIR, HYPER_SHEET_NAME, HYPER_TRAINING_SET, ISOLET_TRAINING_SET, \
@@ -13,9 +14,16 @@ TRAINING_SET_MAP = {
     1: "MNIST original",
     2: ISOLET_TRAINING_SET,
     3: AUSLAN_TRAINING_SET,
-    4: "abalone",
-    5: "letter",
-    6: KDDCUP_TRAINING_SET
+    # 4: "abalone",
+    # 5: "letter",
+    6: KDDCUP_TRAINING_SET,
+    7: "datasets-UCI vowel",
+    8: "yeast",
+    9: "uci-20070111 ecoli",
+    10: "segment",
+    11: "shuttle",
+    12: "satimage",
+    13: ["uci-20070111 solar-flare_1", "uci-20070111 solar-flare_2"],
 }
 
 
@@ -29,15 +37,22 @@ class LearningSetFactory(object):
         abalone = 4
         letter = 5
         kddcup = 6
+        vowel = 7
+        yeast = 8
+        ecoli = 9
+        segment = 10
+        shuttle = 11
+        satimage = 12
+        flare = 13
 
     @staticmethod
     def get_full_learning_set_with_labels(data_source):
         if data_source == LearningSetFactory.DataSource.hypertension:
             return LearningSetFactory.get_full_excel_learning_set_and_labels(path.join(
                 TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]), HYPER_SHEET_NAME, 'wy')
-        elif data_source in (LearningSetFactory.DataSource.mnist, LearningSetFactory.DataSource.letter,
-                             LearningSetFactory.DataSource.abalone):
-            return LearningSetFactory.get_full_mnist_training_set_and_labels(TRAINING_SET_MAP[data_source.value])
+        elif data_source in [LearningSetFactory.DataSource.mnist] + \
+                list(LearningSetFactory.DataSource)[LearningSetFactory.DataSource.vowel.value:]:
+            return LearningSetFactory.get_full_mldata_training_set_and_labels(TRAINING_SET_MAP[data_source.value])
         else:
             return LearningSetFactory.get_full_csv_learning_set_and_labels(path.join(
                 TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]))
@@ -57,7 +72,22 @@ class LearningSetFactory(object):
         return learning_set, learning_labels
 
     @staticmethod
-    def get_full_mnist_training_set_and_labels(repository_name):
+    def get_full_mldata_training_set_and_labels(repository_name):
+        if type(repository_name) == list:
+            data, target = None, None
+            for repository in repository_name:
+                dataset = LearningSetFactory.fetch_mldata_dataset(repository)
+                if data is None and target is None:
+                    data, target = dataset
+                else:
+                    data = np.concatenate([data, dataset[0]])
+                    target = np.concatenate([target, dataset[1]])
+            return data, target
+        else:
+            return fetch_mldata(repository_name)
+
+    @staticmethod
+    def fetch_mldata_dataset(repository_name):
         print("Getting,", repository_name, "...")
         learning_set = fetch_mldata(repository_name)
         print("Done.")
