@@ -84,7 +84,7 @@ class LearningSetFactory(object):
                     target = np.concatenate([target, dataset[1]])
             return data, target
         else:
-            return fetch_mldata(repository_name)
+            return LearningSetFactory.fetch_mldata_dataset(repository_name)
 
     @staticmethod
     def fetch_mldata_dataset(repository_name):
