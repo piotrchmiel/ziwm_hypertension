@@ -7,7 +7,7 @@ from urllib.request import urlretrieve
 from patoolib import extract_archive
 
 from src.settings import AUSLAN_TRAINING_SET, ISOLET_TRAINING_SET, KDDCUP_TRAINING_SET, STUDENT_ALCOHOL_TRAINING_SET,\
-    ADULT_TRAINING_SET, WINE_QUALITY_TRAINING_SET
+    ADULT_TRAINING_SET, WINE_QUALITY_TRAINING_SET, YEAST_TRAINING_SET
 
 datasets = {
     'auslan': {
@@ -63,6 +63,14 @@ datasets = {
         'files': ['winequality-red.csv', 'winequality-white.csv'],
         'operation': 'csv_concat',
         'out': WINE_QUALITY_TRAINING_SET
+    },
+    'yeast': {
+        'download': [
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/yeast/yeast.data'
+        ],
+        'files': ['yeast.data'],
+        'operation': 'data2csv',
+        'out': YEAST_TRAINING_SET
     },
 }
 
@@ -149,6 +157,19 @@ def main():
                                 new_file.write(header[:-1] + '\n')
                 remove(out_filename)
                 move(out_filename + '.tmp', out_filename)
+            if items['operation'] == 'data2csv':
+                with open(out_filename, 'w+') as out_file:
+                    first_record = True
+                    for fname in items['files']:
+                        with open(pjoin(training_root, fname)) as infile:
+                            for line in infile:
+                                if first_record:
+                                    first_record = False
+                                    header = ';'.join(
+                                        ['Atr-' + str(i) for i in range(1, len(line.split()[1:]))]
+                                    ) + ';Class'
+                                    out_file.write(header + '\n')
+                                out_file.write(';'.join(line.split()[1:]) + '\n')
         print('Done.')
 
 if __name__ == '__main__':

@@ -22,6 +22,7 @@ KDDCUP_TRAINING_SET = "kddcup.csv"
 STUDENT_ALCOHOL_TRAINING_SET = "student_alcohol.csv"
 ADULT_TRAINING_SET = "adult.csv"
 WINE_QUALITY_TRAINING_SET = "wine_quality.csv"
+YEAST_TRAINING_SET = "yeast.csv"
 
 CLASSIFIERS_DIR = path.join(BASE_DIR, "Classifiers")
 
