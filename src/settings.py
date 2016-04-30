@@ -45,5 +45,5 @@ METHODS = {ENSEMBLE: {'ada_boost_classifier': (AdaBoostClassifier, DEFAULT_PARAM
                         'dynamic_one_vs_one_10': (DynamicOneVsOneClassifier, dict(
                             {'threshold': 0.1, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
                         'dynamic_one_vs_rest_10': (DynamicOneVsRestClassifier, dict(
-                            {'threshold': 0.1, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS])),
-                        }}
+                            {'threshold': 0.1, 'n_neighbors': 18}, **DEFAULT_PARAMETERS[MULTICLASS]))
+                       }}

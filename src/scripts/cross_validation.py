@@ -23,9 +23,11 @@ def main():
     print("Number of classes:", len(set(train_labels)))
 
     if args.method == MULTICLASS:
-        print(cross_val_score(METHODS[MULTICLASS], train_set, train_labels, n_jobs=args.n_jobs, cv=10))
+        print(cross_val_score(METHODS[MULTICLASS], train_set, train_labels,
+                              n_jobs=args.n_jobs, cv=10))
     elif args.method == ENSEMBLE:
-        print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels, n_jobs=args.n_jobs, cv=10))
+        print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels,
+                              n_jobs=args.n_jobs, cv=10))
         print("Two Layer:")
         print(cross_val_score(METHODS[ENSEMBLE], train_set, train_labels, n_jobs=args.n_jobs,
                               factory=ClassifierFactory.make_two_layer_classifier, cv=10))

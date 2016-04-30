@@ -20,23 +20,23 @@ def main():
     if args.method == MULTICLASS:
         for classifier_name, algorithm_info in METHODS[MULTICLASS].items():
             if 'threshold' not in algorithm_info[1] or algorithm_info[1]['threshold'] == 0.0:
-                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                               n_times=10, n_jobs=-1)
-                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                               n_times=10, n_jobs=1)
+                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                               deepcopy(train_labels), n_times=10, n_jobs=-1)
+                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                               deepcopy(train_labels), n_times=10, n_jobs=1)
     elif args.method == ENSEMBLE:
         for classifier_name, algorithm_info in METHODS[ENSEMBLE].items():
-            time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                           n_times=10, n_jobs=-1)
-            time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                           n_times=10, n_jobs=1)
+            time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                           deepcopy(train_labels), n_times=10, n_jobs=-1)
+            time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                           deepcopy(train_labels), n_times=10, n_jobs=1)
     elif args.method == 'all':
         for classifier_name, algorithm_info in chain(METHODS[MULTICLASS].items(), METHODS[ENSEMBLE].items()):
             if 'threshold' not in algorithm_info[1] or algorithm_info[1]['threshold'] == 0.0:
-                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                               n_times=10, n_jobs=-1)
-                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set), deepcopy(train_labels),
-                               n_times=10, n_jobs=1)
+                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                               deepcopy(train_labels), n_times=10, n_jobs=-1)
+                time_benchmark(classifier_name, algorithm_info, deepcopy(train_set),
+                               deepcopy(train_labels), n_times=10, n_jobs=1)
 
 if __name__ == '__main__':
     main()

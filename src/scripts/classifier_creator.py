@@ -16,8 +16,8 @@ def main():
 
     print("Getting learning sets, using:", args.dataset.upper())
 
-    train_set, train_labels = \
-        LearningSetFactory.get_full_learning_set_with_labels(getattr(LearningSetFactory.DataSource, args.dataset))
+    train_set, train_labels = LearningSetFactory.get_full_learning_set_with_labels(
+        getattr(LearningSetFactory.DataSource, args.dataset))
 
     print("Done.")
     print("Creating classifiers...")
@@ -28,7 +28,7 @@ def main():
         Parallel(n_jobs=args.n_jobs)(get_creator(ENSEMBLE, train_set, train_labels))
     elif args.method == 'all':
         Parallel(n_jobs=args.n_jobs)(chain(get_creator(MULTICLASS, train_set, train_labels),
-                                            get_creator(ENSEMBLE, train_set, train_labels)))
+                                           get_creator(ENSEMBLE, train_set, train_labels)))
 
     print("Done.")
 
