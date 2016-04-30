@@ -29,7 +29,8 @@ def get_arguments(script_name):
                         type=str, help="This parameter determines which classifiers will be created.")
     parser.add_argument('--dataset', '-d', default='hypertension',
                         choices=['hypertension', 'mnist', 'isolet', 'letter', 'abalone', 'auslan', 'kddcup', 'vowel',
-                                 'yeast', 'ecoli', 'segment', 'shuttle', 'satimage', 'flare'],
+                                 'yeast', 'ecoli', 'segment', 'shuttle', 'satimage', 'flare',
+                                 'student_alcohol_consumption', 'adult', 'wine_quality'],
                         type=str, help="This parameter determines which dataset will be used for learning.")
 
     return parser.parse_args()

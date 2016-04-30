@@ -6,7 +6,8 @@ import numpy as np
 from sklearn.datasets import fetch_mldata
 
 from src.settings import TRAINING_SET_DIR, HYPER_SHEET_NAME, HYPER_TRAINING_SET, ISOLET_TRAINING_SET, \
-    AUSLAN_TRAINING_SET, KDDCUP_TRAINING_SET
+    AUSLAN_TRAINING_SET, KDDCUP_TRAINING_SET, STUDENT_ALCOHOL_TRAINING_SET, ADULT_TRAINING_SET, \
+    WINE_QUALITY_TRAINING_SET
 from src.utils.csv_parser import CsvParser
 from src.utils.excel import ExcelParser
 
@@ -26,6 +27,9 @@ TRAINING_SET_MAP = {
     12: {'name': 'satimage', 'kwargs': {}},
     13: [{'name': "uci-20070111 solar-flare_1", 'kwargs': {'target_name': 'class', 'data_name': 'int0'}},
          {'name': "uci-20070111 solar-flare_2", 'kwargs': {'target_name': 'class', 'data_name': 'int0'}}],
+    14: {'name': STUDENT_ALCOHOL_TRAINING_SET},
+    15: {'name': ADULT_TRAINING_SET},
+    16: {'name': WINE_QUALITY_TRAINING_SET},
 }
 
 
@@ -47,13 +51,17 @@ class LearningSetFactory(object):
         shuttle = 11
         satimage = 12
         flare = 13
+        student_alcohol_consumption = 14
+        adult = 15
+        wine_quality = 16
 
     @staticmethod
     def get_full_learning_set_with_labels(data_source):
         if data_source == LearningSetFactory.DataSource.hypertension:
             return LearningSetFactory.get_full_excel_learning_set_and_labels(path.join(
                 TRAINING_SET_DIR, TRAINING_SET_MAP[data_source.value]['name']), HYPER_SHEET_NAME, 'wy')
-        elif data_source in list(LearningSetFactory.DataSource)[LearningSetFactory.DataSource.abalone.value:]:
+        elif data_source in list(LearningSetFactory.DataSource) \
+            [LearningSetFactory.DataSource.abalone.value:LearningSetFactory.DataSource.flare.value + 1]:
             return LearningSetFactory.get_full_mldata_training_set_and_labels(TRAINING_SET_MAP[data_source.value])
         else:
             return LearningSetFactory.get_full_csv_learning_set_and_labels(path.join(

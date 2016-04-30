@@ -6,6 +6,9 @@ from urllib.request import urlretrieve
 
 from patoolib import extract_archive
 
+from src.settings import AUSLAN_TRAINING_SET, ISOLET_TRAINING_SET, KDDCUP_TRAINING_SET, STUDENT_ALCOHOL_TRAINING_SET,\
+    ADULT_TRAINING_SET, WINE_QUALITY_TRAINING_SET
+
 datasets = {
     'auslan': {
         'download': [
@@ -13,7 +16,7 @@ datasets = {
         ],
         'files': ['tctodd' + str(i) for i in range(1, 10)],
         'operation': 'auslan_concat',
-        'out': 'auslan.csv'
+        'out': AUSLAN_TRAINING_SET
     },
     'isolet': {
         'download': [
@@ -25,7 +28,7 @@ datasets = {
             'isolet5.data'
         ],
         'operation': 'concat',
-        'out': 'isolet.csv'
+        'out': ISOLET_TRAINING_SET
     },
     'kddcup': {
         'download': [
@@ -33,7 +36,33 @@ datasets = {
         ],
         'files': ['kddcup.dat'],
         'operation': 'dat2csv',
-        'out': 'kddcup.csv'
+        'out': KDDCUP_TRAINING_SET
+    },
+    'student_alcohol_consumption': {
+        'download': [
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/00356/student.zip'
+        ],
+        'files': ['student-mat.csv', 'student-por.csv'],
+        'operation': 'csv_concat',
+        'out': STUDENT_ALCOHOL_TRAINING_SET
+    },
+    'adult': {
+        'download': [
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data',
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test'
+        ],
+        'files': ['adult.data', 'adult.test'],
+        'operation': 'concat',
+        'out': ADULT_TRAINING_SET
+    },
+    'wine_quality': {
+        'download': [
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv',
+            'https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv'
+        ],
+        'files': ['winequality-red.csv', 'winequality-white.csv'],
+        'operation': 'csv_concat',
+        'out': WINE_QUALITY_TRAINING_SET
     },
 }
 
@@ -85,11 +114,16 @@ def main():
                                 first_record = False
                             out_file.write(line.replace('\t', ';').rstrip() + ';' + class_ + '\n')
         elif not exists(out_filename):
-            if items['operation'] == 'concat' or items['operation'] == 'dat2csv':
+            if items['operation'] in ['concat', 'dat2csv', 'csv_concat']:
                 first_record = True
                 with open(out_filename, 'w') as out_file:
                     for fname in items['files']:
                         with open(pjoin(training_root, fname)) as infile:
+                            if items['operation'] == 'csv_concat':
+                                if first_record:
+                                    first_record = False
+                                else:
+                                    next(infile)
                             for line in infile:
                                 if first_record and items['operation'] == 'concat':
                                     first_record = False
