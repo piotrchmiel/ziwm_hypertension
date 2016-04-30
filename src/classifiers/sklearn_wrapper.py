@@ -21,15 +21,15 @@ class SklearnWrapper(object):
     def train(self, X, y):
         if isinstance(X, numpy.core.memmap) or isinstance(X, numpy.ndarray):
             self._clf_pipeline = self._classifier
-        else:
-            y = self._encoder.fit_transform(y)
+
+        y = self._encoder.fit_transform(y)
         self._clf_pipeline.fit(X, y)
 
     def classify(self, feature_set):
-        if isinstance(feature_set, numpy.core.memmap) or isinstance(feature_set, numpy.ndarray):
-            return self._clf_pipeline.predict(feature_set)[0]
-        else:
-            return self._encoder.classes_[self._clf_pipeline.predict(feature_set)][0]
+        if isinstance(feature_set, numpy.ndarray) and feature_set.ndim == 1:
+            feature_set = feature_set.reshape(1, -1)
+
+        return self._encoder.classes_[self._clf_pipeline.predict(feature_set)][0]
 
     def get_classes(self):
         return self._encoder.classes_
