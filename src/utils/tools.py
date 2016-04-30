@@ -28,9 +28,9 @@ def get_arguments(script_name):
                         choices=['multiclass', 'ensemble', 'all'],
                         type=str, help="This parameter determines which classifiers will be created.")
     parser.add_argument('--dataset', '-d', default='hypertension',
-                        choices=['hypertension', 'mnist', 'isolet', 'letter', 'abalone', 'auslan', 'kddcup', 'vowel',
-                                 'yeast', 'ecoli', 'segment', 'shuttle', 'satimage', 'flare',
-                                 'student_alcohol_consumption', 'adult', 'wine_quality'],
+                        choices=['abalone', 'auslan', 'adult', 'ecoli', 'flare', 'hypertension', 'isolet',
+                                 'kddcup', 'letter', 'mnist', 'satimage', 'segment', 'shuttle',
+                                 'student_alcohol_consumption', 'vowel', 'wine_quality', 'yeast'],
                         type=str, help="This parameter determines which dataset will be used for learning.")
 
     return parser.parse_args()
